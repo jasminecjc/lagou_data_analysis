@@ -73,7 +73,7 @@ def valid_proxy(path, method, code = 0, *payload):
             print e
     return [source, proxies]
 # lagou
-def company_crawler(i, path, position_path, payload, position_payload, company_res):
+def company_crawler(i, path, position_path, payload, position_payload, company_res, company_sql):
     payload['pn'] = str(i)
     company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     for company in company_source['result']:
@@ -141,7 +141,7 @@ def companys():
         thread = []
         for i in range(2, company_pages, company_pages / 5):   
             t = threading.Thread(target=company_crawler,
-                              args=(i, path, position_path, payload, position_payload, company_res))
+                              args=(i, path, position_path, payload, position_payload, company_res, company_sql))
             thread.append(t)
         for i in range(0,6):
             thread[i].start()
