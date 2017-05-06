@@ -371,4 +371,4 @@ def job_crawler(path, job_dic, job_title):
                 print e
     fw.close()
 
-job_desc()
+# job_desc()
