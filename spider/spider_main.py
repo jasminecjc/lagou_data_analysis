@@ -291,7 +291,11 @@ def job_count(job_list, payload, path, job_sql, dic):
                     code = 200 if len(pn_job) != 0 else 0
                 except Exception, e:
                     print 'except: 3'
-                    proxies = {"https": "https://{}".format(get_proxy())}
+                    proxies = {
+                        "http"  : proxyMeta,
+                        "https" : proxyMeta,
+                    }
+                    #proxies = {"https": "https://{}".format(get_proxy())}
             for list in pn_job:
                 if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
                     continue
@@ -353,7 +357,11 @@ def job_crawler(path, job_dic, job_title):
                 code = 200 if len(jobs) != 0 else 0
             except Exception, e:
                 print 'except: 4'
-                proxies = {"https": "https://{}".format(get_proxy())}
+                proxies = {
+                    "http"  : proxyMeta,
+                    "https" : proxyMeta,
+                }
+                #proxies = {"https": "https://{}".format(get_proxy())}
         
         for job in jobs.keys():
             job_path = 'https://www.lagou.com/jobs/%s.html' % (job)
@@ -365,7 +373,7 @@ def job_crawler(path, job_dic, job_title):
                     code = notfound and job_detail.status_code
                 except Exception, e:
                     print 'except: 5'
-                    proxies = {"https": "https://{}".format(get_proxy())}
+                    #proxies = {"https": "https://{}".format(get_proxy())}
             soup = BeautifulSoup(job_detail.content, "html5lib")
             try:
                 job_description = soup.select('.job_bt div')
