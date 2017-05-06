@@ -34,7 +34,7 @@ headers = {
   "Proxy-Authorization": "Basic SDc3RDNIMzk4OUZGNDRQUDo0NTI4RkRGMzFGMUIwNkJC"
 }
 
-db = MySQLdb.connect(host="localhost", user="root", passwd="wjbxlcjc", db="graduate_work", charset="utf8")
+db = MySQLdb.connect(host="localhost", user="root", passwd="55556666", db="lagou_data_analysis", charset="utf8")
 cursor = db.cursor()
 
 
@@ -223,7 +223,7 @@ def companys():
     #     db.rollback()
     #     print 'except: sql'
     #     print e
-            
+companys()          
 # 职位分析
 def job_title():
     path = 'https://www.lagou.com/zhaopin/'
