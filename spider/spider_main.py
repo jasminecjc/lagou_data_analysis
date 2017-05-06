@@ -295,7 +295,7 @@ def job_count(job_list, payload, path, job_sql, dic):
                         "http"  : proxyMeta,
                         "https" : proxyMeta,
                     }
-                    #proxies = {"https": "https://{}".format(get_proxy())}
+                    #proxies = {"https": "https://{}".format(proxy())}
             for list in pn_job:
                 if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
                     continue
@@ -373,6 +373,10 @@ def job_crawler(path, job_dic, job_title):
                     code = notfound and job_detail.status_code
                 except Exception, e:
                     print 'except: 5'
+                    proxies = {
+                        "http"  : proxyMeta,
+                        "https" : proxyMeta,
+                    }
                     #proxies = {"https": "https://{}".format(get_proxy())}
             soup = BeautifulSoup(job_detail.content, "html5lib")
             try:
