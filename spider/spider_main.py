@@ -6,6 +6,7 @@ import re
 import math
 import jieba
 import threading
+import time
 from bs4 import BeautifulSoup, NavigableString
 from pprint import pprint
 from zhon.hanzi import punctuation
@@ -65,7 +66,7 @@ def valid_proxy(path, method, code = 0, *payload):
             try:
                 notfound = len(source.json()['result'])
             except:
-                notfound = 0 if BeautifulSoup(source.content).select('div.i_error') else 1
+                notfound = 0 if BeautifulSoup(source.content,"html5lib").select('div.i_error') else 1
             code = notfound and source.status_code
         except Exception, e:
             # delete_proxy(proxy)
@@ -73,7 +74,7 @@ def valid_proxy(path, method, code = 0, *payload):
             print e
     return [source, proxies]
 # lagou
-def company_clawer(i, path, position_path, payload, position_payload, company_res):
+def company_crawler(i, path, position_path, payload, position_payload, company_res):
     payload['pn'] = str(i)
     company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     for company in company_source['result']:
@@ -85,7 +86,8 @@ def company_clawer(i, path, position_path, payload, position_payload, company_re
         company_pos = company['positionNum']
         company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
         company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-        soup = BeautifulSoup(company_home.content)
+        time.sleep(0.1)
+        soup = BeautifulSoup(company_home.content, "html5lib")
         company_people = soup.select('.number span')[0].get_text()
         company_intro = soup.select('.company_content span')[0].get_text()
         tags = soup.select('.con_ul_li')
@@ -97,6 +99,7 @@ def company_clawer(i, path, position_path, payload, position_payload, company_re
         for page in range(int(math.ceil(float(company_pos) / 10))):
             position_payload['pageNo'] = str(page)
             positions = partial(valid_proxy, position_path, 'post', 0)(payload)[0].json()['content']['data']['page']['result']
+            time.sleep(0.1)
             for position in positions:
                 if position['jobNature'] != '全职':
                     continue
@@ -132,6 +135,7 @@ def companys():
     
     
     try:
+        thread = []
         for i in range(2, company_pages, company_pages / 5):   
             t = threading.Thread(target=company_crawler,
                               args=(i, path, position_path, payload, position_payload, company_res))
@@ -354,12 +358,12 @@ def job_crawler(path, job_dic, job_title):
             while code != 200:
                 try:  
                     job_detail = session.get(job_path, headers = headers, proxies = proxies, timeout = 20)
-                    notfound = 0 if BeautifulSoup(job_detail.content).select('div.i_error') else 1
+                    notfound = 0 if BeautifulSoup(job_detail.content, "html5lib").select('div.i_error') else 1
                     code = notfound and job_detail.status_code
                 except Exception, e:
                     print 'except: 5'
                     proxies = {"https": "https://{}".format(get_proxy())}
-            soup = BeautifulSoup(job_detail.content)
+            soup = BeautifulSoup(job_detail.content, "html5lib")
             try:
                 job_description = soup.select('.job_bt div')
                 job_description = str(job_description[0])
