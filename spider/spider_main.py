@@ -94,11 +94,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             tags = soup.select('.con_ul_li')
             company_tags = []
             for tag in tags:
-                print "1"
-                print tag
                 company_tags.append(tag.get_text())
-                print "2"
-                print company_tags
             position_payload['companyId'] = company_id
             salary = 0
             for page in range(int(math.ceil(float(company_pos) / 10))):
