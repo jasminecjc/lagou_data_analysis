@@ -95,6 +95,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             company_tags = []
             for tag in tags:
                 print "1"
+                print tag
                 company_tags.push(tag.get_text())
                 print "2"
                 print company_tags
