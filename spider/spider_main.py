@@ -94,7 +94,9 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             tags = soup.select('.con_ul_li')
             company_tags = []
             for tag in tags:
+                print "1"
                 company_tags.push(tag.get_text())
+                print "2"
                 print company_tags
             position_payload['companyId'] = company_id
             salary = 0
@@ -107,7 +109,9 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                         continue
                     salary += aver_salary(position['salary'])
             company_salary = salary / company_pos
+            print "3"
             company_res.push((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
+            print "4"
             print company_res
             try:  
                 cursor.executemany(company_sql, company_res) 
