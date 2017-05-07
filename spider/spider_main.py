@@ -111,6 +111,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_r
             print e
         try:  
             cursor.executemany(company_sql, company_res) 
+            print 'sql'
             db.commit() 
         except Exception, e:
             db.rollback()
