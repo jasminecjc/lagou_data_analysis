@@ -88,10 +88,9 @@ def company_crawler(i, path, position_path, payload, position_payload, company_r
             company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
             time.sleep(0.1)
             soup = BeautifulSoup(company_home.content, "html5lib")
-            #company_people = soup.select('.number')[0].next_sibling.get_text()
-            print soup.select('.number')[0].next_sibling
-            print soup.select('.company_content')[0].get_text()
-            #company_intro = soup.select('.company_content')[0].get_text()
+            company_people = soup.select('.number')[0].parent.get_text()
+            print company_people
+            company_intro = soup.select('.company_content')[0].get_text()
             tags = soup.select('.con_ul_li')
             company_tags = []
             for tag in tags:
