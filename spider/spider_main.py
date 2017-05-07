@@ -106,17 +106,18 @@ def company_crawler(i, path, position_path, payload, position_payload, company_r
                     salary += aver_salary(position['salary'])
             company_salary = salary / company_pos
             company_res.push((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
+        
+            try:  
+                cursor.executemany(company_sql, company_res) 
+                print 'sql'
+                db.commit() 
+            except Exception, e:
+                db.rollback()
+                print 'except: sql'
+                print e 
         except Exception, e:
             print 'except get company data'
             print e
-        try:  
-            cursor.executemany(company_sql, company_res) 
-            print 'sql'
-            db.commit() 
-        except Exception, e:
-            db.rollback()
-            print 'except: sql'
-            print e 
 # 公司分析
 def companys():    
     path = 'https://www.lagou.com/gongsi/0-0-0.json'
