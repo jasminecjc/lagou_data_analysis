@@ -96,7 +96,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             for tag in tags:
                 print "1"
                 print tag
-                company_tags.push(tag.get_text())
+                company_tags.append(tag.get_text())
                 print "2"
                 print company_tags
             position_payload['companyId'] = company_id
@@ -111,7 +111,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                     salary += aver_salary(position['salary'])
             company_salary = salary / company_pos
             print "3"
-            company_res.push((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
+            company_res.append((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
             print "4"
             print company_res
             try:  
