@@ -90,12 +90,12 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             time.sleep(0.1)
             soup = BeautifulSoup(company_home.content, "html5lib")
             company_people = soup.select('.number')[0].parent.get_text()
-            print company_people
             company_intro = soup.select('.company_content')[0].get_text()
             tags = soup.select('.con_ul_li')
             company_tags = []
             for tag in tags:
                 company_tags.push(tag.get_text())
+                print company_tags
             position_payload['companyId'] = company_id
             salary = 0
             for page in range(int(math.ceil(float(company_pos) / 10))):
@@ -108,10 +108,9 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                     salary += aver_salary(position['salary'])
             company_salary = salary / company_pos
             company_res.push((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
-        
+            print company_res
             try:  
                 cursor.executemany(company_sql, company_res) 
-                console.log(company_res)
                 print 'sql'
                 db.commit() 
             except Exception, e:
