@@ -80,9 +80,11 @@ def aver_salary(sal):
 # lagou
 def company_crawler(i, path, position_path, payload, position_payload, company_sql):
     payload['pn'] = str(i)
+    print "i=" + i
     company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     company_res = []
     for company in company_source['result']:
+        print len(company_source['result'])
         try: 
             company_id = company['companyId']
             company_name = company['companyShortName']
