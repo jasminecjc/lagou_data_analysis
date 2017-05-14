@@ -84,7 +84,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
     for j in range(i - ranges, i + 1):
         payload['pn'] = str(j)
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
-        time.sleep(0.1)        
+        time.sleep(1)        
         print j
         for company in company_source['result']:
             try: 
@@ -151,9 +151,9 @@ def companys():
         
     try:
         thread = []
-        threadNum = 10 if company_pages % 10 == 0 else 11
+        threadNum = 10 if company_pages % 5 == 0 else 6
         ranges = company_pages / 10
-        for i in range(0, company_pages, company_pages / 10):   
+        for i in range(0, company_pages, company_pages / 5):   
             t = threading.Thread(target=company_crawler,
                               args=(i, ranges, path, position_path, payload, position_payload, company_sql))
             thread.append(t)
