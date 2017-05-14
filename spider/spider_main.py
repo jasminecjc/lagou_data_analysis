@@ -57,9 +57,9 @@ def valid_proxy(path, method, code = 0, *payload):
                 "https" : proxyMeta,
             }
             if method == 'get':     
-                source = session.get(path, headers = headers, proxies = proxies, timeout = 5, verify=False)
+                source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
-                source = session.post(path, headers = headers, proxies = proxies, data = payload[0], timeout = 5, verify=False) 
+                source = session.post(path, headers = headers, proxies = proxies, data = payload[0], timeout = 5) 
             try:
                 notfound = len(source.json()['result'])
             except:
@@ -111,7 +111,6 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                     if position['jobNature'] != '全职':
                         continue
                     salary += aver_salary(position['salary'])
-                    print salary
             company_salary = salary / company_pos
             company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
             try:  
