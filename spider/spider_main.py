@@ -94,7 +94,6 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                 company_tags.append(tag.get_text())
             position_payload['companyId'] = company_id
             salary = 0
-            print company_tags
             for page in range(int(math.ceil(float(company_pos) / 10))):
                 position_payload['pageNo'] = str(page)
                 positions = partial(valid_proxy, position_path, 'post', 0)(payload)[0].json()['content']['data']['page']['result']
