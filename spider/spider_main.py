@@ -7,6 +7,7 @@ import math
 import jieba
 import threading
 import time
+import pprint
 from bs4 import BeautifulSoup, NavigableString
 from pprint import pprint
 from zhon.hanzi import punctuation
@@ -116,6 +117,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
         except Exception, e:
             print 'except get company data'
             print e
+    pprint company_res
     try:  
         cursor.executemany(company_sql, company_res) 
         print 'sql'
