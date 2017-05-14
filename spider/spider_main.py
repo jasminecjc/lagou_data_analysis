@@ -138,7 +138,7 @@ def companys():
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
     source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
-    company_sql = '''insert into lagou_company(name,
+    company_sql = '''insert into lagou_company (name,
                      city, logo_address,industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
                      values (%s ,%s ,%s ,%s ,%s, %s, %s, %s, %s, %s)'''
         
