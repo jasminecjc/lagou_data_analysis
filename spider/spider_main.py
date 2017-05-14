@@ -68,7 +68,6 @@ def valid_proxy(path, method, code = 0, *payload):
             code = notfound and source.status_code
         except Exception, e:
             print 'except: 1'
-            print e
     return [source, proxies]
 def aver_salary(sal):
     if('-' in sal):
@@ -94,7 +93,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             company_industry = company['industryField']
             company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
             company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-            time.sleep(0.5)
+            time.sleep(0.1)
             soup = BeautifulSoup(company_home.content, "html5lib")
             company_people = soup.select('.number')[0].parent.get_text()
             company_intro = soup.select('.company_content')[0].get_text()
@@ -107,7 +106,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             for page in range(int(math.ceil(float(company_pos) / 10))):
                 position_payload['pageNo'] = str(page)
                 positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                time.sleep(0.5)
+                time.sleep(0.1)
                 for position in positions:
                     if position['jobNature'] != '全职':
                         continue
@@ -117,6 +116,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
         except Exception, e:
             print 'except get company data'
             print e
+    print len(company_res)
     try:  
         cursor.executemany(company_sql, company_res) 
         print 'sql'
