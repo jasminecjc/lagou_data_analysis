@@ -139,15 +139,7 @@ def companys():
     source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name, 
-                     city, 
-                     logo_address,
-                     industry, 
-                     finance_stage, 
-                     position_num, 
-                     people_num, 
-                     intro, 
-                     tags, 
-                     aver_salary)
+                     city, logo_address,industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
                      values (%s ,%s ,%s ,%s ,%s, %s, %s, %s, %s, %s)'''
         
     # try:
@@ -203,7 +195,16 @@ def companys():
                         salary += aver_salary(position['salary'])
                 company_salary = salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
-                print company_res
+                print company_name
+                print company_city
+                print company_logo
+                print company_industry
+                print company_stage
+                print company_pos
+                print company_people
+                print company_intro
+                print company_tags
+                print company_salary
             except Exception, e:
                 print 'except get company data'
                 print e
