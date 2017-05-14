@@ -169,7 +169,7 @@ def companys():
     for i in range(1, company_pages):
         payload['pn'] = str(i)
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()       
-        print j
+        print i
         for company in company_source['result']:
             try: 
                 company_res = []
