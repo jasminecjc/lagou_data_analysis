@@ -117,7 +117,6 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
         except Exception, e:
             print 'except get company data'
             print e
-    pprint(company_res)
     try:  
         cursor.executemany(company_sql, company_res) 
         print 'sql'
@@ -148,13 +147,14 @@ def companys():
         
     try:
         thread = []
-        for i in range(2, company_pages, company_pages / 5):   
+        threadNum = 10 if company_pages % 10 == 0 else 11
+        for i in range(0, company_pages, company_pages / 10):   
             t = threading.Thread(target=company_crawler,
                               args=(i, path, position_path, payload, position_payload, company_sql))
             thread.append(t)
-        for i in range(0,6):
+        for i in range(0, threadNum):
             thread[i].start()
-        for i in range(0,6):
+        for i in range(0, threadNum):
             thread[i].join()
     except Exception, e:
         print 'except: 7'
@@ -394,3 +394,4 @@ def job_crawler(path, job_dic, job_title):
     fw.close()
 
 job_desc()
+
