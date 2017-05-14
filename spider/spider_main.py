@@ -195,16 +195,6 @@ def companys():
                         salary += aver_salary(position['salary'])
                 company_salary = salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
-                print company_name
-                print company_city
-                print company_logo
-                print company_industry
-                print company_stage
-                print company_pos
-                print company_people
-                print company_intro
-                print company_tags
-                print company_salary
             except Exception, e:
                 print 'except get company data'
                 print e
