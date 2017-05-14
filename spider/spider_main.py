@@ -31,7 +31,7 @@ proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
   "pass" : proxyPass,
 }
 
-db = MySQLdb.connect(host="localhost", user="root", passwd="wjbxlcjc", db="graduate_work", charset="utf8")
+db = MySQLdb.connect(host="59.110.227.27", user="root", passwd="wjbxlcjc", db="graduate_work", charset="utf8")
 cursor = db.cursor()
 
 
@@ -90,6 +90,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
             company_logo = company['companyLogo']
             company_stage = company['financeStage']
             company_pos = company['positionNum']
+            company_industry = company['industryField']
             company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
             company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
             time.sleep(0.1)
@@ -112,9 +113,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                     salary += aver_salary(position['salary'])
                     print salary
             company_salary = salary / company_pos
-            company_res.append((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
-            print "4"
-            print company_res
+            company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
             try:  
                 cursor.executemany(company_sql, company_res) 
                 print 'sql'
@@ -136,14 +135,15 @@ def companys():
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name, 
                      city, 
-                     logo_address, 
+                     logo_address,
+                     industry, 
                      finance_stage, 
                      position_num, 
                      people_num, 
-                     introduce, 
+                     intro, 
                      tags, 
                      aver_salary)
-                     values (%s ,%s ,%s ,%s ,%s, %s, %s, %s, %s)'''
+                     values (%s ,%s ,%s ,%s ,%s, %s, %s, %s, %s, %s)'''
         
     try:
         thread = []
