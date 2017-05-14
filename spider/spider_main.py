@@ -94,19 +94,18 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                 company_tags.append(tag.get_text())
             position_payload['companyId'] = company_id
             salary = 0
+            print "1"
             for page in range(int(math.ceil(float(company_pos) / 10))):
                 position_payload['pageNo'] = str(page)
-                positions = partial(valid_proxy, position_path, 'post', 0)(payload)[0].json()['content']['data']['page']['result']
+                positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
                 time.sleep(0.1)
-                print "1"
+                print "3"
                 for position in positions:
                     if position['jobNature'] != '全职':
                         continue
                     salary += aver_salary(position['salary'])
                     print salary
-            print "2"
             company_salary = salary / company_pos
-            print "3"
             company_res.append((company_name, company_city, company_logo, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))  
             print "4"
             print company_res
