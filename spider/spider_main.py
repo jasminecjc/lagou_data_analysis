@@ -117,7 +117,7 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
         except Exception, e:
             print 'except get company data'
             print e
-    pprint company_res
+    pprint(company_res)
     try:  
         cursor.executemany(company_sql, company_res) 
         print 'sql'
