@@ -69,6 +69,14 @@ def valid_proxy(path, method, code = 0, *payload):
             print 'except: 1'
             print e
     return [source, proxies]
+def aver_salary(sal):
+    if('-' in sal):
+        b = sal.split('-')
+        c = (int(b[0][:-1]) + int(b[1][:-1])) / 2
+    else:
+        c = int(re.split('k|K', sal)[0])
+    return c
+
 # lagou
 def company_crawler(i, path, position_path, payload, position_payload, company_sql):
     payload['pn'] = str(i)
@@ -94,12 +102,10 @@ def company_crawler(i, path, position_path, payload, position_payload, company_s
                 company_tags.append(tag.get_text())
             position_payload['companyId'] = company_id
             salary = 0
-            print "1"
             for page in range(int(math.ceil(float(company_pos) / 10))):
                 position_payload['pageNo'] = str(page)
                 positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
                 time.sleep(0.1)
-                print "3"
                 for position in positions:
                     if position['jobNature'] != '全职':
                         continue
@@ -237,13 +243,7 @@ companys()
 def job_title():
     path = 'https://www.lagou.com/zhaopin/'
 
-def aver_salary(sal):
-    if('-' in sal):
-        b = sal.split('-')
-        c = (int(b[0][:-1]) + int(b[1][:-1])) / 2
-    else:
-        c = int(re.split('k|K', sal)[0])
-    return c
+
 
 workyear_dic = {
     u'\u0031\u002d\u0033\u5e74': 3,
