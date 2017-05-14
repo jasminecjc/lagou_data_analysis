@@ -84,8 +84,8 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
     for j in range(i - ranges, i + 1):
         payload['pn'] = str(j)
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
-        time.sleep(0.1)
-        company_res = []
+        time.sleep(0.1)        
+        print j
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
