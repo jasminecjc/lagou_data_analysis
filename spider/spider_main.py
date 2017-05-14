@@ -182,7 +182,7 @@ def companys():
                 company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
                 company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-                time.sleep(0.1)
+                #time.sleep(0.1)
                 soup = BeautifulSoup(company_home.content, "html5lib")
                 company_people = soup.select('.number')[0].parent.get_text()
                 company_intro = soup.select('.company_content')[0].get_text()
@@ -195,13 +195,13 @@ def companys():
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
                     positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                    time.sleep(0.1)
+                    #time.sleep(0.1)
                     for position in positions:
                         if position['jobNature'] != '全职':
                             continue
                         salary += aver_salary(position['salary'])
                 company_salary = salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))            
+                company_res.append(company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary)           
                 try:  
                     cursor.execute(company_sql, company_res) 
                     print 'sql'
