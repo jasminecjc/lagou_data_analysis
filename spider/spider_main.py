@@ -78,47 +78,46 @@ def aver_salary(sal):
     return c
 
 # lagou
-def company_crawler(i, path, position_path, payload, position_payload, company_sql):
-    payload['pn'] = str(i)
-    print "i="
-    print i
-    company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
+def company_crawler(i, ranges, path, position_path, payload, position_payload, company_sql):
     company_res = []
-    for company in company_source['result']:
-        print len(company_source['result'])
-        try: 
-            company_id = company['companyId']
-            company_name = company['companyShortName']
-            company_city = company['city']
-            company_logo = company['companyLogo']
-            company_stage = company['financeStage']
-            company_pos = company['positionNum']
-            company_industry = company['industryField']
-            company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-            company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-            time.sleep(0.1)
-            soup = BeautifulSoup(company_home.content, "html5lib")
-            company_people = soup.select('.number')[0].parent.get_text()
-            company_intro = soup.select('.company_content')[0].get_text()
-            tags = soup.select('.con_ul_li')
-            company_tags = []
-            for tag in tags:
-                company_tags.append(tag.get_text())
-            position_payload['companyId'] = company_id
-            salary = 0
-            for page in range(int(math.ceil(float(company_pos) / 10))):
-                position_payload['pageNo'] = str(page)
-                positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+    for j in range(i - ranges, i + 1):
+        payload['pn'] = str(j)
+        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
+        company_res = []
+        for company in company_source['result']:
+            try: 
+                company_id = company['companyId']
+                company_name = company['companyShortName']
+                company_city = company['city']
+                company_logo = company['companyLogo']
+                company_stage = company['financeStage']
+                company_pos = company['positionNum']
+                company_industry = company['industryField']
+                company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
+                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
                 time.sleep(0.1)
-                for position in positions:
-                    if position['jobNature'] != '全职':
-                        continue
-                    salary += aver_salary(position['salary'])
-            company_salary = salary / company_pos
-            company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))            
-        except Exception, e:
-            print 'except get company data'
-            print e
+                soup = BeautifulSoup(company_home.content, "html5lib")
+                company_people = soup.select('.number')[0].parent.get_text()
+                company_intro = soup.select('.company_content')[0].get_text()
+                tags = soup.select('.con_ul_li')
+                company_tags = []
+                for tag in tags:
+                    company_tags.append(tag.get_text())
+                position_payload['companyId'] = company_id
+                salary = 0
+                for page in range(int(math.ceil(float(company_pos) / 10))):
+                    position_payload['pageNo'] = str(page)
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    time.sleep(0.1)
+                    for position in positions:
+                        if position['jobNature'] != '全职':
+                            continue
+                        salary += aver_salary(position['salary'])
+                company_salary = salary / company_pos
+                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))            
+            except Exception, e:
+                print 'except get company data'
+                print e
     print len(company_res)
     try:  
         cursor.executemany(company_sql, company_res) 
@@ -151,9 +150,10 @@ def companys():
     try:
         thread = []
         threadNum = 10 if company_pages % 10 == 0 else 11
+        ranges = company_pages / 10
         for i in range(0, company_pages, company_pages / 10):   
             t = threading.Thread(target=company_crawler,
-                              args=(i, path, position_path, payload, position_payload, company_sql))
+                              args=(i, ranges, path, position_path, payload, position_payload, company_sql))
             thread.append(t)
         for i in range(0, threadNum):
             thread[i].start()
