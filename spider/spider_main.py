@@ -170,9 +170,10 @@ def companys():
         payload['pn'] = str(i)
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()       
         print i
+
+        company_res = []
         for company in company_source['result']:
             try: 
-                company_res = []
                 company_id = company['companyId']
                 company_name = company['companyShortName']
                 company_city = company['city']
@@ -201,18 +202,19 @@ def companys():
                             continue
                         salary += aver_salary(position['salary'])
                 company_salary = salary / company_pos
-                company_res.append(company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary)           
-                try:  
-                    cursor.execute(company_sql, company_res) 
-                    print 'sql'
-                    db.commit() 
-                except Exception, e:
-                    db.rollback()
-                    print 'except: sql'
-                    print e 
+                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
+                
             except Exception, e:
                 print 'except get company data'
                 print e
+        try:  
+            cursor.executemany(company_sql, company_res) 
+            print 'sql'
+            db.commit() 
+        except Exception, e:
+            db.rollback()
+            print 'except: sql'
+            print e 
     #print len(company_res)
     
     
