@@ -137,7 +137,7 @@ def companys():
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
-                     values (%s, "%s", %s, %s, %s, %s, %s, %s, %s, %s)'''
+                     values (%s, "%s", "%s", "%s", "%s", %s, %s, "%s", "%s", %s)'''
     # try:
     #     thread = []
     #     threadNum = 4 if company_pages % 4 == 0 else 5
