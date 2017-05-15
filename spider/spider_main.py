@@ -141,7 +141,6 @@ def companys():
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
                      values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
-    company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary    
     # try:
     #     thread = []
     #     threadNum = 10 if company_pages % 5 == 0 else 6
