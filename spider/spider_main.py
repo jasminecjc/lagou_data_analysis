@@ -140,7 +140,7 @@ def companys():
                      values ("%s", "%s", "%s", "%s", "%s", "%s", %s, "%s","%s", %s)'''
     try:
         thread = []
-        threadNum = 10 if company_pages % 4 == 0 else 5
+        threadNum = 4 if company_pages % 4 == 0 else 5
         ranges = company_pages / 4
         for i in range(0, company_pages, company_pages / 4):   
             t = threading.Thread(target=company_crawler,
