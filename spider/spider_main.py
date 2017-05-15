@@ -164,17 +164,17 @@ def companys():
     # for i in range(1, company_pages + 1):
     #     payload['pn'] = str(i)  
     #     print i   
-        if i % 55 == 0:
-            proxies = {"https": "https://{}".format(get_proxy())}
-        code = 0
-        while code != 200:
-            try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
-                code = 200 if len(pn_companys['result']) != 0 else 0
-                print i
-            except Exception, e:
-                print 'except: 2'
-                proxies = {"https": "https://{}".format(get_proxy())}
+        # if i % 55 == 0:
+        #     proxies = {"https": "https://{}".format(get_proxy())}
+        # code = 0
+        # while code != 200:
+        #     try:  
+        #         company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
+        #         code = 200 if len(pn_companys['result']) != 0 else 0
+        #         print i
+        #     except Exception, e:
+        #         print 'except: 2'
+        #         proxies = {"https": "https://{}".format(get_proxy())}
     #     company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
     #     for company in company_source['result']:
     #         try: 
@@ -437,8 +437,10 @@ def job_crawler(path, job_dic, job_title):
                     print 'except: 5'
                     #proxies = {"https": "https://{}".format(get_proxy())}
             soup = BeautifulSoup(job_detail.content, "lxml")
+            print soup
             try:
                 job_description = soup.select('.job_bt div')
+                print job_description
                 job_description = str(job_description[0])
                 rule = re.compile(r'<[^>]+>') 
                 result = rule.sub('', job_description)
