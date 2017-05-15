@@ -57,7 +57,6 @@ def valid_proxy(path, method, code = 0, *payload):
                 "http"  : proxyMeta,
                 "https" : proxyMeta,
             }
-            print proxies 
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
