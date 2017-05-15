@@ -17,6 +17,11 @@ import sys
 reload(sys) 
 sys.setdefaultencoding('utf-8') 
 
+import urllib
+rawdata = urllib.urlopen('http://www.google.cn/').read()
+import chardet
+chardet.detect(rawdata)
+
 # 代理服务器
 proxyHost = "proxy.abuyun.com"
 proxyPort = "9010"
@@ -172,12 +177,12 @@ def companys():
                 company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
                 #time.sleep(0.1)
                 soup = BeautifulSoup(company_home.content, "html5lib")
-                company_people = soup.select('.number')[0].parent.get_text().encode("utf-8")
+                company_people = soup.select('.number')[0].parent.get_text().strip().encode("utf-8")
                 company_intro = soup.select('.company_content')[0].get_text().encode("utf-8")
                 tags = soup.select('.con_ul_li')
                 company_tags = []
                 for tag in tags:
-                    company_tags.append(tag.get_text().encode("utf-8"))
+                    company_tags.append(tag.get_text().strip().encode("utf-8"))
                 position_payload['companyId'] = company_id
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
