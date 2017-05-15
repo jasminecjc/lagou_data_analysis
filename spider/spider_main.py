@@ -49,14 +49,14 @@ headers = {
 
 # def delete_proxy(proxy):
 #     requests.get("http://127.0.0.1:5000/delete/?proxy={}".format(proxy))
-
+proxies = {
+    "http"  : proxyMeta,
+    "https" : proxyMeta,
+}
+            
 def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
-            proxies = {
-                "http"  : proxyMeta,
-                "https" : proxyMeta,
-            }
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
@@ -69,7 +69,7 @@ def valid_proxy(path, method, code = 0, *payload):
         except Exception, e:
             print 'except: 1'
             print e
-    return [source, proxies]
+    return source
 def aver_salary(sal):
     if('-' in sal):
         b = sal.split('-')
@@ -84,7 +84,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
     for j in range(i - ranges, i + 1):
         payload['pn'] = str(j)
         print j
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -95,7 +95,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
                 company_pos = company['positionNum']
                 company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
+                company_home = partial(valid_proxy, company_path, 'get', 0)()
                 soup = BeautifulSoup(company_home.content, "lxml")
                 company_people = soup.select('.number')[0].parent.get_text().strip()
                 company_intro = soup.select('.company_content')[0].get_text()
@@ -107,7 +107,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload).json()['content']['data']['page']['result']
                     for position in positions:
                         if position['jobNature'] != '全职':
                             continue
@@ -392,7 +392,7 @@ def job_crawler(path, job_dic, job_title):
     fw = open('%s.txt' % (job_dic[job_title]), 'wt')
     for page in range(1, pages + 1):
         if page % 50 == 0:
-            proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
+            proxies = partial(valid_proxy, path, 'post', 0)(payload)
         payload['pn'] = str(page)
         code = 0
         while code != 200:
@@ -434,5 +434,5 @@ def job_crawler(path, job_dic, job_title):
                 print e
     fw.close()
 
-#job_desc()
+job_desc()
 
