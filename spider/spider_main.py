@@ -140,7 +140,7 @@ def companys():
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
-                     values (%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)'''
+                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
     # try:
     #     thread = []
     #     threadNum = 10 if company_pages % 5 == 0 else 6
@@ -176,6 +176,8 @@ def companys():
                 soup = BeautifulSoup(company_home.content, "html5lib")
                 company_people = soup.select('.number')[0].parent.get_text()
                 company_intro = soup.select('.company_content')[0].get_text()
+                print "intro"
+                print type(company_intro)
                 tags = soup.select('.con_ul_li')
                 company_tags = []
                 for tag in tags:
