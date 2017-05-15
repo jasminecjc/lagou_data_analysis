@@ -138,10 +138,10 @@ def companys():
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
     source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
-    company_sql = '''insert into lagou_company (name,
-                     city, logo_address,industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
-                     values (%s ,%s ,%s ,%s ,%s, %s, %s, %s, %s, %s)'''
-        
+    company_sql = '''insert into lagou_company(name,
+                     city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
+                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+    company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary    
     # try:
     #     thread = []
     #     threadNum = 10 if company_pages % 5 == 0 else 6
@@ -161,8 +161,6 @@ def companys():
     for i in range(1, company_pages):
         payload['pn'] = str(i)
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()       
-        print i
-
         company_res = []
         for company in company_source['result']:
             try: 
