@@ -191,7 +191,7 @@ def companys():
             except Exception, e:
                 print 'except get company data'
                 print e
-        if len(company_res) % 10000 == 0 or i == company_pages:
+        if len(company_res) % 1000 == 0 or i == company_pages:
             try:  
                 cursor.executemany(company_sql, company_res) 
                 db.commit() 
