@@ -20,7 +20,7 @@ sys.setdefaultencoding('utf-8')
 import urllib
 rawdata = urllib.urlopen('http://www.google.cn/').read()
 import chardet
-chardet.detect(rawdata)
+print(chardet.detect(rawdata))
 
 # 代理服务器
 proxyHost = "proxy.abuyun.com"
