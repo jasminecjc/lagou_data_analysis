@@ -154,7 +154,8 @@ def companys():
     #     print e  
     company_res = []
     for i in range(1, company_pages + 1):
-        payload['pn'] = str(i)     
+        payload['pn'] = str(i)  
+        print i   
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
         for company in company_source['result']:
             try: 
@@ -185,7 +186,7 @@ def companys():
                         if position['jobNature'] != '全职':
                             continue
                         salary += aver_salary(position['salary'])
-                company_salary = salary / company_pos
+                company_salary = 0 if company_pos == 0 else salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
             except Exception, e:
                 print 'except get company data'
