@@ -153,9 +153,10 @@ def companys():
     # except Exception, e:
     #     print 'except: 7'
     #     print e  
-    company_res = []
+    
     for i in range(1, company_pages):
         payload['pn'] = str(i)
+        company_res = []
         company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
         for company in company_source['result']:
             try: 
@@ -191,14 +192,14 @@ def companys():
             except Exception, e:
                 print 'except get company data'
                 print e
-    try:  
-        cursor.executemany(company_sql, company_res) 
-        print 'sql'
-        db.commit() 
-    except Exception, e:
-        db.rollback()
-        print 'except: sql'
-        print e 
+        try:  
+            cursor.executemany(company_sql, company_res) 
+            print 'sql'
+            db.commit() 
+        except Exception, e:
+            db.rollback()
+            print 'except: sql'
+            print e 
     #print len(company_res)
     
     
