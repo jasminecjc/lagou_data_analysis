@@ -17,11 +17,6 @@ import sys
 reload(sys) 
 sys.setdefaultencoding('utf-8') 
 
-import urllib
-rawdata = urllib.urlopen('http://www.google.cn/').read()
-import chardet
-print(chardet.detect(rawdata))
-
 # 代理服务器
 proxyHost = "proxy.abuyun.com"
 proxyPort = "9010"
@@ -102,7 +97,6 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
                 company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
                 company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-                #time.sleep(0.1)
                 soup = BeautifulSoup(company_home.content, "html5lib")
                 company_people = soup.select('.number')[0].parent.get_text()
                 company_intro = soup.select('.company_content')[0].get_text()
@@ -115,7 +109,6 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
                     positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                    #time.sleep(0.1)
                     for position in positions:
                         if position['jobNature'] != '全职':
                             continue
@@ -143,7 +136,7 @@ def companys():
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
-                     values (%r, %r, %r, %r, %r, %r, %r, %r, %r, %r)'''
+                     values ("%s", "%s", "%s", "%s", "%s", "%s", %s, "%s","%s", %s)'''
     # try:
     #     thread = []
     #     threadNum = 10 if company_pages % 5 == 0 else 6
@@ -167,22 +160,22 @@ def companys():
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
-                company_name = company['companyShortName'].encode("utf-8")
-                company_city = company['city'].encode("utf-8")
+                company_name = company['companyShortName']
+                company_city = company['city']
                 company_logo = company['companyLogo']
-                company_stage = company['financeStage'].encode("utf-8")
+                company_stage = company['financeStage']
                 company_pos = company['positionNum']
-                company_industry = company['industryField'].encode("utf-8")
+                company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
                 company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
                 #time.sleep(0.1)
                 soup = BeautifulSoup(company_home.content, "html5lib")
-                company_people = soup.select('.number')[0].parent.get_text().strip().encode("utf-8")
-                company_intro = soup.select('.company_content')[0].get_text().encode("utf-8")
+                company_people = soup.select('.number')[0].parent.get_text().strip()
+                company_intro = soup.select('.company_content')[0].get_text()
                 tags = soup.select('.con_ul_li')
                 company_tags = []
                 for tag in tags:
-                    company_tags.append(tag.get_text().strip().encode("utf-8"))
+                    company_tags.append(tag.get_text().strip())
                 position_payload['companyId'] = company_id
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
