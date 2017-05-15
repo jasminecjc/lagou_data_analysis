@@ -177,7 +177,7 @@ def companys():
                 tags = soup.select('.con_ul_li')
                 company_tags = []
                 for tag in tags:
-                    company_tags.append(tag.get_text())
+                    company_tags.append(tag.get_text().encode("utf-8"))
                 position_payload['companyId'] = company_id
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
@@ -189,7 +189,7 @@ def companys():
                             continue
                         salary += aver_salary(position['salary'])
                 company_salary = salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags.encode("utf-8"), company_salary))          
+                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
             except Exception, e:
                 print 'except get company data'
                 print e
