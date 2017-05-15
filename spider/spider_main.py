@@ -53,7 +53,7 @@ proxies = {
     "http"  : proxyMeta,
     "https" : proxyMeta,
 }
-            
+
 def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
@@ -130,7 +130,7 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
+    source = partial(valid_proxy, path, 'post', 0)(payload).json()
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
@@ -154,7 +154,7 @@ def companys():
     for i in range(1, company_pages + 1):
         payload['pn'] = str(i)  
         print i   
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -165,7 +165,7 @@ def companys():
                 company_pos = company['positionNum']
                 company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
+                company_home = partial(valid_proxy, company_path, 'get', 0)()
                 #time.sleep(0.1)
                 soup = BeautifulSoup(company_home.content, "lxml")
                 company_people = soup.select('.number')[0].parent.get_text().strip()
@@ -178,7 +178,7 @@ def companys():
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload).json()['content']['data']['page']['result']
                     #time.sleep(0.1)
                     for position in positions:
                         if position['jobNature'] != '全职':
@@ -189,15 +189,14 @@ def companys():
             except Exception, e:
                 print 'except get company data'
                 print e
-        if len(company_res) % 1000 == 0 or i == company_pages:
-            try:  
-                cursor.executemany(company_sql, company_res) 
-                db.commit() 
-                company_res = []
-            except Exception, e:
-                db.rollback()
-                print 'except: sql'
-                print e 
+        try:  
+            cursor.executemany(company_sql, company_res) 
+            db.commit() 
+            company_res = []
+        except Exception, e:
+            db.rollback()
+            print 'except: sql'
+            print e 
     #print len(company_res)
     
     
