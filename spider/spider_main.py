@@ -336,29 +336,35 @@ def job_count(job_list, path, job_sql):
             if page % 50 == 0:
                 proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
             payload['pn'] = str(page)
-            try:  
-                pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
-                print 'page: %s' % (page)
-                for list in pn_job:
-                    if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
-                        continue
-                    years = workyear_dic[list['workYear']]
-                    city = list['city']
-                    salary = aver_salary(list['salary'])
-                    stage = list['financeStage']
-                    education = list['education']
-                    fields = list['industryField']
-                    job_value.append((job, city, salary, years, stage, education, fields))
-            except Exception, e:
-                print 'except: 3'        
-        try:  
-            cursor.executemany(job_sql, job_value)
-            print 'sql'
-            db.commit() 
-        except Exception, e:
-            db.rollback()
-            print 'except: sql'
-            print e        
+            code = 0
+            while code != 200: 
+                try:  
+                    pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
+                    print 'page: %s' % (page)
+                    code = 200
+                except Exception, e:
+                    print 'except: 3'
+                    proxies = {"https": "https://{}".format(get_proxy())}
+            for list in pn_job:
+                if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
+                    continue
+                years = workyear_dic[list['workYear']]
+                city = list['city']
+                salary = aver_salary(list['salary'])
+                stage = list['financeStage']
+                education = list['education']
+                fields = list['industryField']
+                job_value.append((job, city, salary, years, stage, education, fields))
+            if page % 100 == 0 or page == pages:        
+                try:  
+                    cursor.executemany(job_sql, job_value)
+                    print 'sql'
+                    job_value = []
+                    db.commit() 
+                except Exception, e:
+                    db.rollback()
+                    print 'except: sql'
+                    print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
     lan_list = ['Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
