@@ -367,7 +367,7 @@ def job_count(job_list, path, job_sql):
                     print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-    lan_list = ['Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
+    lan_list = ['JavaScript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
     
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
