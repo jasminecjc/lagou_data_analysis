@@ -368,6 +368,7 @@ def program_lan():
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, financeStage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
+    thread = []
     try:
         for lan in lan_list:    
             t = threading.Thread(target=job_count,
