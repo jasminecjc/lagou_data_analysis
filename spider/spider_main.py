@@ -387,7 +387,7 @@ def program_lan():
     #     print e 
     job_count(lan_list, path, lan_sql)
 
-program_lan()
+#program_lan()
 #companys()
 
 
@@ -395,23 +395,23 @@ program_lan()
 def data_job():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false' 
     data_job_sql = '''insert into lagou_data_job(job_name,
-                 city, aver_salary, years, financeStage, education, fields)
+                 city, aver_salary, years, finance_stage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
-    try:
-        for job_title in keys:    
-            t = threading.Thread(target=job_count,
-                              args=(path, job_dic, job_title))
-            thread.append(t)
-        for i in range(len(keys)):
-            thread[i].start()
-        for i in range(len(keys)):
-            thread[i].join()
-    except Exception, e:
-        print 'except: 7'
-        print e 
-    job_count(job_dic, payload, path, data_job_sql, workyear_dic)
+    # try:
+    #     for job_title in keys:    
+    #         t = threading.Thread(target=job_count,
+    #                           args=(path, job_dic, job_title))
+    #         thread.append(t)
+    #     for i in range(len(keys)):
+    #         thread[i].start()
+    #     for i in range(len(keys)):
+    #         thread[i].join()
+    # except Exception, e:
+    #     print 'except: 7'
+    #     print e 
+    job_count(job_dic.keys(), path, data_job_sql)
 
-#data_job()
+data_job()
 
 def job_desc():
 
