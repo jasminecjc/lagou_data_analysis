@@ -355,14 +355,14 @@ def job_count(job_list, path, job_sql):
                 education = list['education']
                 fields = list['industryField']
                 job_value.append((job, city, salary, years, stage, education, fields))
-    try:  
-        cursor.executemany(job_sql, job_value)
-        print 'sql'
-        db.commit() 
-    except Exception, e:
-        db.rollback()
-        print 'except: sql'
-        print e        
+        try:  
+            cursor.executemany(job_sql, job_value)
+            print 'sql'
+            db.commit() 
+        except Exception, e:
+            db.rollback()
+            print 'except: sql'
+            print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
     lan_list = ['Javascript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
