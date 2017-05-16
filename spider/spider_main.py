@@ -355,7 +355,8 @@ def job_count(job, path, job_sql):
             fields = list['industryField']
             job_value.append((job, city, salary, years, stage, education, fields))
     try:  
-        cursor.executemany(job_sql, job_value) 
+        cursor.executemany(job_sql, job_value)
+        print page 
         db.commit() 
     except Exception, e:
         db.rollback()
