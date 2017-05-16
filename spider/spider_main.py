@@ -330,7 +330,6 @@ def job_count(job_list, path, job_sql):
         positions = res[0].json()['content']
         proxies = res[1]
         pages = int(math.ceil(positions['positionResult']['totalCount'] / positions['pageSize']))
-        job_value = []
         for page in range(1, pages + 1):
             if page == 1:
                 payload['first'] = 'true'
