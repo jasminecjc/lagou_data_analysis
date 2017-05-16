@@ -322,41 +322,43 @@ job_dic = {
 }
 payload = {'first': 'false', 'pn': '2', 'kd': ''}
 
-def job_count(job, path, job_sql):
-    payload['kd'] = job
-    res = partial(valid_proxy, path, 'post', 0)(payload)
-    positions = res[0].json()['content']
-    proxies = res[1]
-    pages = int(math.ceil(positions['positionResult']['totalCount'] / positions['pageSize']))
+def job_count(job_list, path, job_sql):
     job_value = []
-    for page in range(1, pages + 1):
-        if page == 1:
-            payload['first'] = 'true'
-        if page % 50 == 0:
-            proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
-        payload['pn'] = str(page)
-        code = 0
-        while code != 200:
-            try:  
-                pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
-                #print 'page: %s' % (page)
-                code = 200 if len(pn_job) != 0 else 0
-            except Exception, e:
-                print 'except: 3'
-                proxies = {"https": "https://{}".format(get_proxy())}
-        for list in pn_job:
-            if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
-                continue
-            years = workyear_dic[list['workYear']]
-            city = list['city']
-            salary = aver_salary(list['salary'])
-            stage = list['financeStage']
-            education = list['education']
-            fields = list['industryField']
-            job_value.append((job, city, salary, years, stage, education, fields))
+    for job in job_list:
+        payload['kd'] = job
+        res = partial(valid_proxy, path, 'post', 0)(payload)
+        positions = res[0].json()['content']
+        proxies = res[1]
+        pages = int(math.ceil(positions['positionResult']['totalCount'] / positions['pageSize']))
+        job_value = []
+        for page in range(1, pages + 1):
+            if page == 1:
+                payload['first'] = 'true'
+            if page % 50 == 0:
+                proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
+            payload['pn'] = str(page)
+            code = 0
+            while code != 200:
+                try:  
+                    pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
+                    print 'page: %s' % (page)
+                    code = 200 if len(pn_job) != 0 else 0
+                except Exception, e:
+                    print 'except: 3'
+                    proxies = {"https": "https://{}".format(get_proxy())}
+            for list in pn_job:
+                if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
+                    continue
+                years = workyear_dic[list['workYear']]
+                city = list['city']
+                salary = aver_salary(list['salary'])
+                stage = list['financeStage']
+                education = list['education']
+                fields = list['industryField']
+                job_value.append((job, city, salary, years, stage, education, fields))
     try:  
         cursor.executemany(job_sql, job_value)
-        print page 
+        print 'sql'
         db.commit() 
     except Exception, e:
         db.rollback()
@@ -369,20 +371,20 @@ def program_lan():
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
-    thread = []
-    try:
-        for lan in lan_list:    
-            t = threading.Thread(target=job_count,
-                              args=(lan, path, lan_sql))
-            thread.append(t)
-        for i in range(10):
-            thread[i].start()
-        for i in range(10):
-            thread[i].join()
-    except Exception, e:
-        print 'except: 7'
-        print e 
-    
+    # thread = []
+    # try:
+    #     for lan in lan_list:    
+    #         t = threading.Thread(target=job_count,
+    #                           args=(lan, path, lan_sql))
+    #         thread.append(t)
+    #     for i in range(10):
+    #         thread[i].start()
+    #     for i in range(10):
+    #         thread[i].join()
+    # except Exception, e:
+    #     print 'except: 7'
+    #     print e 
+    job_count(lan_list, path, lan_sql)
 
 program_lan()
 #companys()
