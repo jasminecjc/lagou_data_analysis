@@ -366,7 +366,7 @@ def program_lan():
     lan_list = ['Javascript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
     
     lan_sql = '''insert into lagou_lan(lan,
-                 city, aver_salary, years, financeStage, education, fields)
+                 city, aver_salary, years, finance_stage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
     thread = []
     try:
