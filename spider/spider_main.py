@@ -438,7 +438,6 @@ def job_crawler(path, job_dic, job_title):
             soup = BeautifulSoup(job_detail.content, "lxml")
             try:
                 job_description = soup.select('.job_bt div')
-                print job_description
                 job_description = str(job_description[0])
                 rule = re.compile(r'<[^>]+>') 
                 result = rule.sub('', job_description)
