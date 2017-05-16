@@ -339,11 +339,11 @@ def job_count(job, path, job_sql):
         while code != 200:
             try:  
                 pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
-                print 'page: %s' % (page)
+                #print 'page: %s' % (page)
                 code = 200 if len(pn_job) != 0 else 0
             except Exception, e:
                 print 'except: 3'
-                proxies = {"https": "https://{}".format(proxy())}
+                proxies = {"https": "https://{}".format(get_proxy())}
         for list in pn_job:
             if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
                 continue
@@ -441,7 +441,7 @@ def job_crawler(path, job_dic, job_title):
         try:  
             jobs = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['hrInfoMap']
             code = 200 if len(jobs) != 0 else 0
-            print page
+            #print page
         except Exception, e:
             print 'except: 4'
         
