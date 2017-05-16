@@ -330,7 +330,7 @@ def job_count(job_list, path, job_sql):
         positions = res[0].json()['content']
         proxies = res[1]
         pages = int(math.ceil(positions['positionResult']['totalCount'] / positions['pageSize']))
-        for page in range(100, pages + 1):
+        for page in range(1, pages + 1):
             if page == 1:
                 payload['first'] = 'true'
             if page % 50 == 0:
@@ -367,7 +367,7 @@ def job_count(job_list, path, job_sql):
                     print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-    lan_list = ['Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
+    lan_list = ['Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
     
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
