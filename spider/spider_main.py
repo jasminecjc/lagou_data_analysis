@@ -436,7 +436,6 @@ def job_crawler(path, job_dic, job_title):
                     print 'except: 5'
                     proxies = {"https": "https://{}".format(get_proxy())}
             soup = BeautifulSoup(job_detail.content, "lxml")
-            print soup
             try:
                 job_description = soup.select('.job_bt div')
                 print job_description
