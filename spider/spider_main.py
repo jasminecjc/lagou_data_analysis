@@ -438,6 +438,7 @@ def job_crawler(path, job_dic, job_title):
                     #notfound = 0 if BeautifulSoup(job_detail.content, "lxml").select('div.i_error') else 1
                 except Exception, e:
                     print 'except: 5'
+                    print e
                     proxies = {"https": "https://{}".format(get_proxy())}
 
     fw.close()
