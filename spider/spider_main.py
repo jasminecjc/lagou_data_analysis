@@ -348,12 +348,12 @@ def job_count(job_list, path, job_sql):
             for list in pn_job:
                 if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
                     continue
-                years = workyear_dic[list['workYear']]
-                city = list['city']
-                salary = aver_salary(list['salary'])
-                stage = list['financeStage']
-                education = list['education']
-                fields = list['industryField']
+                years = workyear_dic[list['workYear']] or 'unknown'
+                city = list['city'] or 'unknown'
+                salary = aver_salary(list['salary']) or 0
+                stage = list['financeStage'] or 'unknown'
+                education = list['education'] or 'unknown'
+                fields = list['industryField'] or 'unknown'
                 job_value.append((job, city, salary, years, stage, education, fields))
             if page % 50 == 0 or page == pages:        
                 try:  
