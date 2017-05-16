@@ -44,7 +44,6 @@ headers = {
 }
     
 def get_proxy():
-    print requests.get("http://127.0.0.1:5000/get/").content
     return requests.get("http://127.0.0.1:5000/get/").content
 
 def delete_proxy(proxy):
@@ -58,7 +57,6 @@ def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
             proxies = {"https": "https://{}".format(get_proxy())}
-            print proxies
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
@@ -71,7 +69,7 @@ def valid_proxy(path, method, code = 0, *payload):
         except Exception, e:
             print 'except: 1'
             print e
-    return source
+    return [source, proxies]
 def aver_salary(sal):
     if('-' in sal):
         b = sal.split('-')
@@ -413,8 +411,9 @@ def job_crawler(path, job_dic, job_title):
     pages = int(math.ceil(positions['positionResult']['totalCount'] / float(positions['pageSize'])))
     fw = open('%s.txt' % (job_dic[job_title]), 'wt')
     for page in range(1, pages + 1):
+        print page
         if page % 50 == 0:
-            proxies = partial(valid_proxy, path, 'post', 0)(payload)
+            proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
         payload['pn'] = str(page)
         code = 0
         while code != 200:
