@@ -313,6 +313,13 @@ workyear_dic = {
     u'\u0035\u002d\u0031\u0030\u5e74': 10,
     u'\u4e0d\u9650': 1
 }
+job_dic = {
+    '数据可视化': 'data_visualize',
+    '数据挖掘': 'data_mining',
+    '数据分析': 'data_analysis',
+    '大数据工程师': 'data_dev',
+    '数据架构师': 'data_arc'
+}
 payload = {'first': 'false', 'pn': '2', 'kd': ''}
 
 def program_lan():
@@ -325,19 +332,16 @@ def program_lan():
     job_count(lan_list, payload, path, lan_sql, workyear_dic)
     
 
-#program_lan()
+program_lan()
 #companys()
 
 
-def job_count(job_list, payload, path, job_sql, dic):
+def job_count(job_list, payload, path, job_sql):
     for job in job_list:
         payload['kd'] = job
         res = partial(valid_proxy, path, 'post', 0)(payload)
         positions = res[0].json()['content']
         proxies = res[1]
-        # print positions['positionResult']['totalCount']
-        # cursor.execute(sql, lan)
-        # print cursor.rowcount
         pages = int(math.ceil(positions['positionResult']['totalCount'] / positions['pageSize']))
         job_value = []
         for page in range(1, pages + 1):
@@ -349,17 +353,12 @@ def job_count(job_list, payload, path, job_sql, dic):
             code = 0
             while code != 200:
                 try:  
-                    pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 20).json()['content']['positionResult']['result']
-                    #print 'len: %s' % (len(pn_lan))
+                    pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
                     print 'page: %s' % (page)
                     code = 200 if len(pn_job) != 0 else 0
                 except Exception, e:
                     print 'except: 3'
-                    proxies = {
-                        "http"  : proxyMeta,
-                        "https" : proxyMeta,
-                    }
-                    #proxies = {"https": "https://{}".format(proxy())}
+                    proxies = {"https": "https://{}".format(proxy())}
             for list in pn_job:
                 if list['jobNature'] != '全职' or workyear_dic.has_key(list['workYear']) == False:
                     continue
@@ -377,16 +376,17 @@ def job_count(job_list, payload, path, job_sql, dic):
             db.rollback()
             print 'except: sql'
             print e        
-#def data_job_count:
+def data_job:
+    path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false' 
+    data_job_sql = '''insert into lagou_data_job(job_name,
+                 city, aver_salary, years, financeStage, education, fields)
+                 values (%s, %s, %s, %s, %s, %s, %s)'''
+    job_count(job_dic, payload, path, data_job_sql, workyear_dic)
+
+data_job()
 
 def job_desc():
-    job_dic = {
-        '数据可视化': 'data_visualize',
-        '数据挖掘': 'data_mining',
-        '数据分析': 'data_analysis',
-        '大数据工程师': 'data_dev',
-        '数据架构师': 'data_arc'
-    }
+
     thread = []
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
     keys = job_dic.keys()
@@ -411,40 +411,31 @@ def job_crawler(path, job_dic, job_title):
     pages = int(math.ceil(positions['positionResult']['totalCount'] / float(positions['pageSize'])))
     fw = open('%s.txt' % (job_dic[job_title]), 'wt')
     for page in range(1, pages + 1):
-        print page
         if page % 50 == 0:
             proxies = partial(valid_proxy, path, 'post', 0)(payload)[1]
         payload['pn'] = str(page)
-        code = 0
-        while code != 200:
-            try:  
-                jobs = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['hrInfoMap']
-                code = 200 if len(jobs) != 0 else 0
-            except Exception, e:
-                print 'except: 4'
-                proxies = {"https": "https://{}".format(get_proxy())}
+        try:  
+            jobs = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['hrInfoMap']
+            code = 200 if len(jobs) != 0 else 0
+            print page
+        except Exception, e:
+            print 'except: 4'
         
         for job in jobs.keys():
             job_path = 'https://www.lagou.com/jobs/%s.html' % (job)
-            code = 0
-            while code != 200:
-                try:  
-                    job_detail = session.get(job_path, headers = headers, proxies = proxies, timeout = 6)
-                    notfound = 0 if BeautifulSoup(job_detail.content, "lxml").select('div.i_error') else 1
-                    code = notfound and job_detail.status_code
-                except Exception, e:
-                    print 'except: 5'
-                    proxies = {"https": "https://{}".format(get_proxy())}
-            soup = BeautifulSoup(job_detail.content, "lxml")
-            try:
+            try:  
+                job_detail = session.get(job_path, headers = headers, proxies = proxies, timeout = 5)
+                soup = BeautifulSoup(job_detail.content, "lxml")
                 job_description = soup.select('.job_bt div')
                 job_description = str(job_description[0])
                 rule = re.compile(r'<[^>]+>') 
                 result = rule.sub('', job_description)
                 fw.write(result)
+                # 这里太慢了
+                #notfound = 0 if BeautifulSoup(job_detail.content, "lxml").select('div.i_error') else 1
             except Exception, e:
-                print 'except: 6'
-                print e
+                print 'except: 5'
+
     fw.close()
 
 job_desc()
