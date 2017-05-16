@@ -427,20 +427,21 @@ def job_crawler(path, job_dic, job_title):
             while code != 200:
                 try:  
                     job_detail = session.get(job_path, headers = headers, proxies = proxies, timeout = 5)
+                    code = job_detail.status_code
+                    notfound = 0 if BeautifulSoup(job_detail.content, "lxml").select('div.i_error') else 1
+                    code = notfound && job_detail.status_code
+                except Exception, e:
+                    print 'except: 5'
+                    proxies = {"https": "https://{}".format(get_proxy())}
+                try: 
                     soup = BeautifulSoup(job_detail.content, "lxml")
                     job_description = soup.select('.job_bt div')
                     job_description = str(job_description[0])
                     rule = re.compile(r'<[^>]+>') 
                     result = rule.sub('', job_description)
                     fw.write(result)
-                    code = job_detail.status_code
-                    # 这里太慢了
-                    #notfound = 0 if BeautifulSoup(job_detail.content, "lxml").select('div.i_error') else 1
                 except Exception, e:
-                    print 'except: 5'
-                    print e
-                    proxies = {"https": "https://{}".format(get_proxy())}
-
+                    print 'except: 6'
     fw.close()
 
 job_desc()
