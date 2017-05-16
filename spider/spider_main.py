@@ -322,7 +322,7 @@ job_dic = {
 }
 payload = {'first': 'false', 'pn': '2', 'kd': ''}
 
-def job_count(job_list, payload, path, job_sql):
+def job_count(job_list, path, job_sql):
     for job in job_list:
         payload['kd'] = job
         res = partial(valid_proxy, path, 'post', 0)(payload)
@@ -369,7 +369,7 @@ def program_lan():
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, financeStage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
-    job_count(lan_list, payload, path, lan_sql, workyear_dic)
+    job_count(lan_list, path, lan_sql)
     
 
 program_lan()
