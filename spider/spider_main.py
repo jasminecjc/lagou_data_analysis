@@ -332,7 +332,7 @@ def program_lan():
     job_count(lan_list, payload, path, lan_sql, workyear_dic)
     
 
-program_lan()
+#program_lan()
 #companys()
 
 
@@ -376,14 +376,14 @@ def job_count(job_list, payload, path, job_sql):
             db.rollback()
             print 'except: sql'
             print e        
-def data_job:
+def data_job():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false' 
     data_job_sql = '''insert into lagou_data_job(job_name,
                  city, aver_salary, years, financeStage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
     job_count(job_dic, payload, path, data_job_sql, workyear_dic)
 
-data_job()
+#data_job()
 
 def job_desc():
 
