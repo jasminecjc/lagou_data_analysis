@@ -44,7 +44,7 @@ headers = {
 }
     
 def get_proxy():
-    console.log(requests.get("http://127.0.0.1:5000/get/").content)
+    print requests.get("http://127.0.0.1:5000/get/").content
     return requests.get("http://127.0.0.1:5000/get/").content
 
 def delete_proxy(proxy):
