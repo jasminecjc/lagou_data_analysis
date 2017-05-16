@@ -57,7 +57,7 @@ def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
             proxies = {"https": "https://{}".format(get_proxy())}
-            console.log(proxies)
+            print proxies
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
