@@ -341,7 +341,7 @@ def job_count(job_list, path, job_sql):
                 try:  
                     pn_job = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['positionResult']['result']
                     print 'page: %s' % (page)
-                    code = 200 if len(pn_job) != 0 else 0
+                    code = 200
                 except Exception, e:
                     print 'except: 3'
                     proxies = {"https": "https://{}".format(get_proxy())}
@@ -365,7 +365,7 @@ def job_count(job_list, path, job_sql):
             print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-    lan_list = ['Javascript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
+    lan_list = ['Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
     
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
