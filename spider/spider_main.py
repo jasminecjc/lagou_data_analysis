@@ -322,20 +322,6 @@ job_dic = {
 }
 payload = {'first': 'false', 'pn': '2', 'kd': ''}
 
-def program_lan():
-    path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-    lan_list = ['Javascript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
-    
-    lan_sql = '''insert into lagou_lan(lan,
-                 city, aver_salary, years, financeStage, education, fields)
-                 values (%s, %s, %s, %s, %s, %s, %s)'''
-    job_count(lan_list, payload, path, lan_sql, workyear_dic)
-    
-
-program_lan()
-#companys()
-
-
 def job_count(job_list, payload, path, job_sql):
     for job in job_list:
         payload['kd'] = job
@@ -376,6 +362,21 @@ def job_count(job_list, payload, path, job_sql):
         db.rollback()
         print 'except: sql'
         print e        
+def program_lan():
+    path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
+    lan_list = ['Javascript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
+    
+    lan_sql = '''insert into lagou_lan(lan,
+                 city, aver_salary, years, financeStage, education, fields)
+                 values (%s, %s, %s, %s, %s, %s, %s)'''
+    job_count(lan_list, payload, path, lan_sql, workyear_dic)
+    
+
+program_lan()
+#companys()
+
+
+
 def data_job():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false' 
     data_job_sql = '''insert into lagou_data_job(job_name,
