@@ -406,7 +406,7 @@ def job_desc():
 def job_crawler(path, job_dic, job_title):
     payload = {'first': 'false', 'pn': '2', 'kd': job_title}
     res = partial(valid_proxy, path, 'post', 0)(payload)
-    position = res[0].json()['content']
+    positions = res[0].json()['content']
     proxies = res[1]
     pages = int(math.ceil(positions['positionResult']['totalCount'] / float(positions['pageSize'])))
     fw = open('%s.txt' % (job_dic[job_title]), 'wt')
