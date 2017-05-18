@@ -154,8 +154,8 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
-                print company_source
+                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
+                #print company_source
                 ccode = 200
             except Exception, e:
                 print 'except: 2'
@@ -337,16 +337,16 @@ def job_count(job_list, path, job_sql):
                 education = list['education'] or 'unknown'
                 fields = list['industryField'] or 'unknown'
                 job_value.append((job, city, salary, years, stage, education, fields))
-            # if page % 50 == 0 or page == pages:        
-            #     try:  
-            #         cursor.executemany(job_sql, job_value)
-            #         print 'sql'
-            #         job_value = []
-            #         db.commit() 
-            #     except Exception, e:
-            #         db.rollback()
-            #         print 'except: sql'
-            #         print e        
+            if page % 50 == 0 or page == pages:        
+                try:  
+                    cursor.executemany(job_sql, job_value)
+                    print 'sql'
+                    job_value = []
+                    db.commit() 
+                except Exception, e:
+                    db.rollback()
+                    print 'except: sql'
+                    print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
     lan_list = ['Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
@@ -356,8 +356,8 @@ def program_lan():
                  values (%s, %s, %s, %s, %s, %s, %s)'''
     job_count(lan_list, path, lan_sql)
 
-program_lan()
-#companys()
+#program_lan()
+companys()
 
 
 
