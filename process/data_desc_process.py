@@ -1,45 +1,80 @@
 # -*- coding: utf-8 -*-
 import jieba
 import os
+from os import path
 from collections import Counter
 import codecs
+from scipy.misc import imread
+import matplotlib as mpl 
+import matplotlib.pyplot as plt 
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
-file_list = ['data_visualize.txt', 'data_analysis.txt', 'data_arc.txt', 'data_mining.txt', 'data_dev.txt']
-_curpath=os.path.normpath( os.path.join( os.getcwd(), os.path.dirname(__file__) ))
-settings_path = os.environ.get('dict.txt')
-if settings_path and os.path.exists(settings_path):
-    jieba.set_dictionary(settings_path)
-elif os.path.exists(os.path.join(_curpath, 'data/dict.txt.big')):
-    jieba.set_dictionary('data/dict.txt.big')
-else:
-    print "Using traditional dictionary!"
+class GetWords(object):
+    def __init__(self, dict_name, file_list , dic_list):
+        self.dict_name = dict_name
+        self.file_list = file_list
+        self.dic_list = dic_list
 
-dic = open('dict.txt', 'r')
-dic_list = []
-while 1:
-    line = dic.readline().decode('utf-8').strip()
-    dic_list.append(line)
-    if not line:
-        break
-    pass
-for file in file_list:
-    with codecs.open('../spider/' + file, "r",encoding='utf-8', errors='ignore') as string:
-        string = string.read().upper()
-        res = jieba.cut(string, HMM=False)
-        reslist = list(res)
-        wordDict = {}
-        for i in reslist:
-            if i not in dic_list:
-                continue
-            if i in wordDict:
-                wordDict[i]=wordDict[i]+1
-            else:
-                wordDict[i] = 1
-    count = Counter(wordDict)
-    word_res = count.most_common()[:50]
-    f_out = open('word_%s'%(file), 'wt')
-    for word in word_res:
-        f_out.write(word[0].encode('utf-8') + '  ' + str(word[1]) + '\n')
-    f_out.close()
+    def get_dic(self):  
+        dic = open(self.dict_name, 'r')
+        while 1:
+            line = dic.readline().decode('utf-8').strip()
+            self.dic_list.append(line)
+            if not line:
+                break
+            pass
+            
+    def get_word_to_cloud(self):
+        for file in self.file_list:
+            with codecs.open('../spider/' + file, "r",encoding='utf-8', errors='ignore') as string:
+                string = string.read().upper()
+                res = jieba.cut(string, HMM=False)
+                reslist = list(res)
+                wordDict = {}
+                for i in reslist:
+                    if i not in self.dic_list:
+                        continue
+                    if i in wordDict:
+                        wordDict[i]=wordDict[i]+1
+                    else:
+                        wordDict[i] = 1
+            # count = Counter(wordDict)
+            # word_res = count.most_common()[:50]
+            # word_res = MultiDict(word_res)
+            #mpl.rcParams['font.sans-serif'] = ['FangSong']
+            coloring = imread('test.jpeg')
+            wc = WordCloud(font_path='msyh.ttf',mask=coloring,
+                    background_color="white", max_words=50,
+                    max_font_size=40, random_state=42)
 
+            wc.generate_from_frequencies(wordDict)
+            # plt.imshow(wc)
+            # plt.axis("off")
+            # plt.show()
+
+            wc.to_file("%s.png"%(file))
+            # f_out = open('word_%s'%(file), 'wt')
+            # for word in word_res:
+            #     f_out.write(word[0].encode('utf-8') + '  ' + str(word[1]) + '\n')
+            # f_out.close()
+
+
+def set_dic():
+    _curpath=os.path.normpath( os.path.join( os.getcwd(), os.path.dirname(__file__) ))
+    settings_path = os.environ.get('dict.txt')
+    if settings_path and os.path.exists(settings_path):
+        jieba.set_dictionary(settings_path)
+    elif os.path.exists(os.path.join(_curpath, 'data/dict.txt.big')):
+        jieba.set_dictionary('data/dict.txt.big')
+    else:
+        print "Using traditional dictionary!"
+ 
+if __name__ == '__main__':
+    set_dic()
+    file_list = ['data_visualize.txt', 'data_dev.txt', 'data_mining.txt', 'data_arc.txt', 'data_analysis.txt']
+    dic_name = 'dict.txt'
+    dic_list = []
+    getwords = GetWords(dic_name, file_list, dic_list)
+    getwords.get_dic()
+    getwords.get_word_to_cloud()
 
