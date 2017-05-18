@@ -38,26 +38,16 @@ class GetWords(object):
                         wordDict[i]=wordDict[i]+1
                     else:
                         wordDict[i] = 1
-            # count = Counter(wordDict)
-            # word_res = count.most_common()[:50]
-            # word_res = MultiDict(word_res)
-            #mpl.rcParams['font.sans-serif'] = ['FangSong']
+
             coloring = imread('test.jpeg')
+            
             wc = WordCloud(font_path='msyh.ttf',mask=coloring,
                     background_color="white", max_words=50,
                     max_font_size=40, random_state=42)
 
             wc.generate_from_frequencies(wordDict)
-            # plt.imshow(wc)
-            # plt.axis("off")
-            # plt.show()
 
             wc.to_file("%s.png"%(file))
-            # f_out = open('word_%s'%(file), 'wt')
-            # for word in word_res:
-            #     f_out.write(word[0].encode('utf-8') + '  ' + str(word[1]) + '\n')
-            # f_out.close()
-
 
 def set_dic():
     _curpath=os.path.normpath( os.path.join( os.getcwd(), os.path.dirname(__file__) ))
