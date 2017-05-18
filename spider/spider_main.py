@@ -156,7 +156,7 @@ def companys():
             try:  
                 company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
                 #print company_source
-                ccode = 200
+                code = 200
             except Exception, e:
                 print 'except: 2'
                 print e
