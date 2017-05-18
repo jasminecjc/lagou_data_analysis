@@ -127,6 +127,7 @@ def companys():
     source = res[0].json()
     proxies = res[1]
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
+    print company_pages
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
                      values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s)'''
@@ -148,7 +149,6 @@ def companys():
     company_res = []
     for i in range(1, company_pages + 1):
         payload['pn'] = str(i)  
-        print i   
         if i % 55 == 0:
             proxies = {"https": "https://{}".format(get_proxy())}
         code = 0
@@ -156,12 +156,12 @@ def companys():
             try:  
                 company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
                 ccode = 200 if len(company_source['result']) != 0 else 0
-                print i
             except Exception, e:
                 print 'except: 2'
                 print e
                 proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json() 
+        print i         
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
