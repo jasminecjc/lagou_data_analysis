@@ -123,11 +123,11 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    res = partial(valid_proxy, path, 'post', 0)(payload)
-    source = res[0].json()
-    proxies = res[1]
-    company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
-    print company_pages
+    # res = partial(valid_proxy, path, 'post', 0)(payload)
+    # source = res[0].json()
+    # proxies = res[1]
+    # company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
+    proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
                      values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s)'''
@@ -147,7 +147,7 @@ def companys():
     #     print 'except: 7'
     #     print e  
     company_res = []
-    for i in range(1, company_pages + 1):
+    for i in range(1, 8911):
         payload['pn'] = str(i)  
         if i % 55 == 0:
             proxies = {"https": "https://{}".format(get_proxy())}
