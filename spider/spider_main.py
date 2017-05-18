@@ -17,20 +17,6 @@ import sys
 reload(sys) 
 sys.setdefaultencoding('utf-8') 
 
-# 代理服务器
-# proxyHost = "proxy.abuyun.com"
-# proxyPort = "9010"
-
-#代理隧道验证信息
-# proxyUser = "H120J438128517RP"
-# proxyPass = "F7D202C52E523A30"
-
-# proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
-#   "host" : proxyHost,
-#   "port" : proxyPort,
-#   "user" : proxyUser,
-#   "pass" : proxyPass,
-# }
 
 db = MySQLdb.connect(host="59.110.227.27", user="root", passwd="wjbxlcjc", db="graduate_work", charset="utf8")
 cursor = db.cursor()
@@ -48,10 +34,6 @@ def get_proxy():
 
 def delete_proxy(proxy):
     requests.get("http://127.0.0.1:5000/delete/?proxy={}".format(proxy))
-# proxies = {
-#     "http"  : proxyMeta,
-#     "https" : proxyMeta,
-# }
 
 def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
@@ -301,11 +283,6 @@ def companys():
     #     print 'except: sql'
     #     print e
 #companys()          
-# 职位分析
-def job_title():
-    path = 'https://www.lagou.com/zhaopin/'
-
-
 
 workyear_dic = {
     u'\u0031\u002d\u0033\u5e74': 3,
@@ -372,19 +349,6 @@ def program_lan():
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
-    # thread = []
-    # try:
-    #     for lan in lan_list:    
-    #         t = threading.Thread(target=job_count,
-    #                           args=(lan, path, lan_sql))
-    #         thread.append(t)
-    #     for i in range(10):
-    #         thread[i].start()
-    #     for i in range(10):
-    #         thread[i].join()
-    # except Exception, e:
-    #     print 'except: 7'
-    #     print e 
     job_count(lan_list, path, lan_sql)
 
 #program_lan()
@@ -397,21 +361,9 @@ def data_job():
     data_job_sql = '''insert into lagou_data_job(job_name,
                  city, aver_salary, years, finance_stage, education, fields)
                  values (%s, %s, %s, %s, %s, %s, %s)'''
-    # try:
-    #     for job_title in keys:    
-    #         t = threading.Thread(target=job_count,
-    #                           args=(path, job_dic, job_title))
-    #         thread.append(t)
-    #     for i in range(len(keys)):
-    #         thread[i].start()
-    #     for i in range(len(keys)):
-    #         thread[i].join()
-    # except Exception, e:
-    #     print 'except: 7'
-    #     print e 
     job_count(job_dic.keys(), path, data_job_sql)
 
-data_job()
+#data_job()
 
 def job_desc():
 
@@ -445,7 +397,6 @@ def job_crawler(path, job_dic, job_title):
         try:  
             jobs = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 5).json()['content']['hrInfoMap']
             code = 200 if len(jobs) != 0 else 0
-            #print page
         except Exception, e:
             print 'except: 4'
         
