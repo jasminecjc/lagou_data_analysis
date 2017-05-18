@@ -123,7 +123,9 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    source = partial(valid_proxy, path, 'post', 0)(payload).json()
+    res = partial(valid_proxy, path, 'post', 0)(payload)
+    source = res[0].json()
+    proxies = res[1]
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
@@ -158,7 +160,7 @@ def companys():
             except Exception, e:
                 print 'except: 2'
                 proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -181,7 +183,7 @@ def companys():
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload).json()['content']['data']['page']['result']
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
                     #time.sleep(0.1)
                     for position in positions:
                         if position['jobNature'] != '全职':

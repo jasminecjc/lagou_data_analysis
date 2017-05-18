@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import jieba
 import os
-from os import path
-from collections import Counter
 import codecs
 from scipy.misc import imread
 import matplotlib as mpl 
@@ -40,7 +38,7 @@ class GetWords(object):
                         wordDict[i] = 1
 
             coloring = imread('test.jpeg')
-            
+
             wc = WordCloud(font_path='msyh.ttf',mask=coloring,
                     background_color="white", max_words=50,
                     max_font_size=40, random_state=42)
