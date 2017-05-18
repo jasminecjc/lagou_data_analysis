@@ -184,14 +184,15 @@ def companys():
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()
+                    print positions
                     #time.sleep(0.1)
-                    for position in positions:
-                        if position['jobNature'] != '全职':
-                            continue
-                        salary += aver_salary(position['salary'])
-                company_salary = 0 if company_pos == 0 else salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
+                #     for position in positions:
+                #         if position['jobNature'] != '全职':
+                #             continue
+                #         salary += aver_salary(position['salary'])
+                # company_salary = 0 if company_pos == 0 else salary / company_pos
+                # company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
                 print len(company_res)
             except Exception, e:
                 print 'except get company data'
