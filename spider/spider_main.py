@@ -154,7 +154,8 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
+                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
+                print company_source
                 ccode = 200
             except Exception, e:
                 print 'except: 2'
