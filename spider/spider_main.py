@@ -161,7 +161,6 @@ def companys():
                 print 'except: 2'
                 print e
                 proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json() 
         print i         
         for company in company_source['result']:
             try: 
