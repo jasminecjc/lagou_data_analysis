@@ -193,10 +193,11 @@ def companys():
                         salary += aver_salary(position['salary'])
                 company_salary = 0 if company_pos == 0 else salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
+                print len(company_res)
             except Exception, e:
                 print 'except get company data'
                 print e
-        if i % 100 == 0 or i == company_pages:
+        if i % 100 == 0 or i == 8910:
             try:  
                 cursor.executemany(company_sql, company_res) 
                 print 'sql'
