@@ -64,8 +64,9 @@ def valid_proxy(path, method, code = 0, *payload):
             else:
                 source = session.post(path, headers = headers, proxies = proxies, data = payload[0], timeout = 5) 
             try:
-                notfound = len(source.json()['result'])
+                notfound = 1 if source.json() else 0
             except:
+                print source.content
                 notfound = 0 if BeautifulSoup(source.content,"lxml").select('div.i_error') else 1
             code = notfound and source.status_code
         except Exception, e:
