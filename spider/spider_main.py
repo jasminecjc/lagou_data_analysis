@@ -39,6 +39,7 @@ proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
 }
 
 proxies = {
+    "http" : proxyMeta,
     "https" : proxyMeta,
 }
 
@@ -67,6 +68,7 @@ def valid_proxy(path, method, code = 0, *payload):
             except:
                 notfound = 0 if BeautifulSoup(source.content,"lxml").select('div.i_error') else 1
             code = notfound and source.status_code
+            print source
         except Exception, e:
             print 'except: 1'
             print e
