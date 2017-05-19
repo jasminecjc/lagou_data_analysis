@@ -23,8 +23,27 @@ cursor = db.cursor()
 
 
 session = requests.session()
-    
+ 
+proxyHost = "proxy.abuyun.com"
+proxyPort = "9010"
+
+# 代理隧道验证信息
+proxyUser = "H77D3H3989FF44PP"
+proxyPass = "4528FDF31F1B06BB"
+
+proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
+  "host" : proxyHost,
+  "port" : proxyPort,
+  "user" : proxyUser,
+  "pass" : proxyPass,
+}
+
+proxies = {
+    "https" : proxyMeta,
+}
+
 headers = {
+    'Proxy-Authorization': 'Basic SDc3RDNIMzk4OUZGNDRQUDo0NTI4RkRGMzFGMUIwNkJC',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
     'Cookie': 'LGUID=20160223140504-620c0982-d9f3-11e5-8b4c-525400f775ce; tencentSig=6558885888; user_trace_token=20170228174718-e5fb608afce74f799b7776b1047078c6; fromsite=www.google.co.jp; index_location_city=%E5%85%A8%E5%9B%BD; SEARCH_ID=903d052305ac48cd89da8777f732ed0d; JSESSIONID=937760D5DB1DE2F81DA0B920D449CE9F; PRE_UTM=; PRE_HOST=www.baidu.com; PRE_SITE=https%3A%2F%2Fwww.baidu.com%2Flink%3Furl%3DgqHLbZOanuNKiqmYhHa76U6q7FKEDxhDErLFpCoECiO%26wd%3D%26eqid%3D8df355dc0004eb9b0000000258e7a7eb; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; TG-TRACK-CODE=index_company; _ga=GA1.2.507913091.1456207502; LGSID=20170407225346-009efbed-1ba2-11e7-9d24-5254005c3644; LGRID=20170407225432-1bd38d70-1ba2-11e7-9d24-5254005c3644; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491466928,1491556280,1491576814,1491576825; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491576870'
 }
@@ -38,7 +57,7 @@ def delete_proxy(proxy):
 def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
-            proxies = {"https": "https://{}".format(get_proxy())}
+            #proxies = {"https": "https://{}".format(get_proxy())}
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
@@ -51,7 +70,8 @@ def valid_proxy(path, method, code = 0, *payload):
         except Exception, e:
             print 'except: 1'
             print e
-    return [source, proxies]
+    #return [source, proxies]
+    return source
 def aver_salary(sal):
     if('-' in sal):
         b = sal.split('-')
@@ -77,7 +97,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
             except Exception, e:
                 print 'except: 2'
                 proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -123,9 +143,10 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    res = partial(valid_proxy, path, 'post', 0)(payload)
-    source = res[0].json()
-    proxies = res[1]
+    # res = partial(valid_proxy, path, 'post', 0)(payload)
+    # source = res[0].json()
+    # proxies = res[1]
+    source = partial(valid_proxy, path, 'post', 0)(payload)
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
@@ -149,8 +170,8 @@ def companys():
     company_res = []
     for i in range(1, company_pages + 1):
         payload['pn'] = str(i)  
-        if i % 55 == 0:
-            proxies = {"https": "https://{}".format(get_proxy())}
+        # if i % 55 == 0:
+        #     proxies = {"https": "https://{}".format(get_proxy())}
         code = 0
         while code != 200:
             try:  
@@ -160,7 +181,7 @@ def companys():
             except Exception, e:
                 print 'except: 2'
                 print e
-                proxies = {"https": "https://{}".format(get_proxy())}
+                #proxies = {"https": "https://{}".format(get_proxy())}
         print i         
         for company in company_source['result']:
             try: 
@@ -172,7 +193,7 @@ def companys():
                 company_pos = company['positionNum']
                 company_industry = company['industryField']
                 company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
+                company_home = partial(valid_proxy, company_path, 'get', 0)()
                 soup = BeautifulSoup(company_home.content, "lxml")
                 company_people = soup.select('.number')[0].parent.get_text().strip()
                 company_intro = soup.select('.company_content')[0].get_text()
@@ -185,7 +206,7 @@ def companys():
                 salary = 0
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload).json()['content']['data']['page']['result']
                     #time.sleep(0.1)
                     for position in positions:
                         if position['jobNature'] != '全职':
@@ -197,7 +218,7 @@ def companys():
             except Exception, e:
                 print 'except get company data'
                 print e
-        if i % 100 == 0 or i == company_pages:
+        if i % 50 == 0 or i == company_pages:
             try:  
                 cursor.executemany(company_sql, company_res) 
                 print 'sql'
