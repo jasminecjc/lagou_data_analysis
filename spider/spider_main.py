@@ -23,28 +23,8 @@ cursor = db.cursor()
 
 
 session = requests.session()
- 
-proxyHost = "proxy.abuyun.com"
-proxyPort = "9010"
-
-# 代理隧道验证信息
-proxyUser = "H77D3H3989FF44PP"
-proxyPass = "4528FDF31F1B06BB"
-
-proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
-  "host" : proxyHost,
-  "port" : proxyPort,
-  "user" : proxyUser,
-  "pass" : proxyPass,
-}
-
-proxies = {
-    "http" : proxyMeta,
-    "https" : proxyMeta,
-}
-
+    
 headers = {
-    'Proxy-Authorization': 'Basic SDc3RDNIMzk4OUZGNDRQUDo0NTI4RkRGMzFGMUIwNkJC',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
     'Cookie': 'LGUID=20160223140504-620c0982-d9f3-11e5-8b4c-525400f775ce; tencentSig=6558885888; user_trace_token=20170228174718-e5fb608afce74f799b7776b1047078c6; fromsite=www.google.co.jp; index_location_city=%E5%85%A8%E5%9B%BD; SEARCH_ID=903d052305ac48cd89da8777f732ed0d; JSESSIONID=937760D5DB1DE2F81DA0B920D449CE9F; PRE_UTM=; PRE_HOST=www.baidu.com; PRE_SITE=https%3A%2F%2Fwww.baidu.com%2Flink%3Furl%3DgqHLbZOanuNKiqmYhHa76U6q7FKEDxhDErLFpCoECiO%26wd%3D%26eqid%3D8df355dc0004eb9b0000000258e7a7eb; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; TG-TRACK-CODE=index_company; _ga=GA1.2.507913091.1456207502; LGSID=20170407225346-009efbed-1ba2-11e7-9d24-5254005c3644; LGRID=20170407225432-1bd38d70-1ba2-11e7-9d24-5254005c3644; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491466928,1491556280,1491576814,1491576825; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491576870'
 }
@@ -58,15 +38,14 @@ def delete_proxy(proxy):
 def valid_proxy(path, method, code = 0, *payload):
     while code != 200:
         try:  
-            #proxies = {"https": "https://{}".format(get_proxy())}
+            proxies = {"https": "https://{}".format(get_proxy())}
             if method == 'get':     
                 source = session.get(path, headers = headers, proxies = proxies, timeout = 5)
             else:
                 source = session.post(path, headers = headers, proxies = proxies, data = payload[0], timeout = 5) 
             try:
-                notfound = 1 if source.json() else 0
+                notfound = len(source.json()['result'])
             except:
-                print source.content
                 notfound = 0 if BeautifulSoup(source.content,"lxml").select('div.i_error') else 1
             code = notfound and source.status_code
         except Exception, e:
@@ -98,7 +77,7 @@ def company_crawler(i, ranges, path, position_path, payload, position_payload, c
             except Exception, e:
                 print 'except: 2'
                 proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload).json()          
+        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -144,70 +123,14 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    # res = partial(valid_proxy, path, 'post', 0)(payload)
-    # source = res[0].json()
-    # proxies = res[1]
-    source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()
+    res = partial(valid_proxy, path, 'post', 0)(payload)
+    source = res[0].json()
+    proxies = res[1]
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary, location)
                      values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s, %s)'''
-
-    company_res = []
-    for i in range(1, company_pages):
-        payload['pn'] = str(i)
-        try:
-            company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
-            for company in company_source['result']:
-                try: 
-                    company_id = company['companyId']
-                    company_name = company['companyShortName']
-                    company_city = company['city']
-                    company_logo = company['companyLogo']
-                    company_stage = company['financeStage']
-                    company_pos = company['positionNum']
-                    company_industry = company['industryField']
-                    company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                    company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-                    #time.sleep(0.1)
-                    soup = BeautifulSoup(company_home.content, "lxml")
-                    company_people = soup.select('.number')[0].parent.get_text().strip()
-                    company_intro = soup.select('.company_content')[0].get_text()
-                    company_location = soup.select('.mlist_li_desc')[0].get_text()
-                    tags = soup.select('.con_ul_li')
-                    company_tags = []
-                    for tag in tags:
-                        company_tags.append(tag.get_text().strip())
-                    position_payload['companyId'] = company_id
-                    salary = 0
-                    for page in range(int(math.ceil(float(company_pos) / 10))):
-                        position_payload['pageNo'] = str(page)
-                        positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                        #time.sleep(0.1)
-                        for position in positions:
-                            if position['jobNature'] != '全职':
-                                continue
-                            salary += aver_salary(position['salary'])
-                    company_salary = 0 if company_pos == 0 else salary / company_pos
-                    company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
-                except Exception, e:
-                    print 'except get company data'
-                    print e
-                print len(company_res)
-            if i % 50 == 0 or i == company_pages:
-                try:  
-                    cursor.executemany(company_sql, company_res) 
-                    print 'sql'
-                    db.commit() 
-                    company_res = []
-                except Exception, e:
-                    db.rollback()
-                    print 'except: sql'
-                    print e 
-        except Exception, e:
-            print 'except company_source err'
-            print e
     # try:
     #     thread = []
     #     threadNum = 4 if company_pages % 4 == 0 else 5
@@ -223,67 +146,67 @@ def companys():
     # except Exception, e:
     #     print 'except: 7'
     #     print e  
-    # company_res = []
-    # for i in range(1, company_pages + 1):
-    #     payload['pn'] = str(i)  
-    #     # if i % 55 == 0:
-    #     #     proxies = {"https": "https://{}".format(get_proxy())}
-    #     code = 0
-    #     while code != 200:
-    #         try:  
-    #             company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
+    company_res = []
+    for i in range(1, company_pages + 1):
+        payload['pn'] = str(i)  
+        if i % 55 == 0:
+            proxies = {"https": "https://{}".format(get_proxy())}
+        code = 0
+        while code != 200:
+            try:  
+                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
                 
-    #             code = 200
-    #         except Exception, e:
-    #             print 'except: 2'
-    #             print e
-    #             #proxies = {"https": "https://{}".format(get_proxy())}
-    #     print i         
-    #     for company in company_source['result']:
-    #         try: 
-    #             company_id = company['companyId']
-    #             company_name = company['companyShortName']
-    #             company_city = company['city']
-    #             company_logo = company['companyLogo']
-    #             company_stage = company['financeStage']
-    #             company_pos = company['positionNum']
-    #             company_industry = company['industryField']
-    #             company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-    #             company_home = partial(valid_proxy, company_path, 'get', 0)()
-    #             soup = BeautifulSoup(company_home.content, "lxml")
-    #             company_people = soup.select('.number')[0].parent.get_text().strip()
-    #             company_intro = soup.select('.company_content')[0].get_text()
-    #             company_location = soup.select('.mlist_li_desc')[0].get_text()
-    #             tags = soup.select('.con_ul_li')
-    #             company_tags = []
-    #             for tag in tags:
-    #                 company_tags.append(tag.get_text().strip())
-    #             position_payload['companyId'] = company_id
-    #             salary = 0
-    #             for page in range(int(math.ceil(float(company_pos) / 10))):
-    #                 position_payload['pageNo'] = str(page)
-    #                 positions = partial(valid_proxy, position_path, 'post', 0)(position_payload).json()['content']['data']['page']['result']
-    #                 #time.sleep(0.1)
-    #                 for position in positions:
-    #                     if position['jobNature'] != '全职':
-    #                         continue
-    #                     salary += aver_salary(position['salary'])
-    #             company_salary = 0 if company_pos == 0 else salary / company_pos
-    #             company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
-    #             print len(company_res)
-    #         except Exception, e:
-    #             print 'except get company data'
-    #             print e
-    #     if i % 50 == 0 or i == company_pages:
-    #         try:  
-    #             cursor.executemany(company_sql, company_res) 
-    #             print 'sql'
-    #             db.commit() 
-    #             company_res = []
-    #         except Exception, e:
-    #             db.rollback()
-    #             print 'except: sql'
-    #             print e 
+                code = 200
+            except Exception, e:
+                print 'except: 2'
+                print e
+                proxies = {"https": "https://{}".format(get_proxy())}
+        print i         
+        for company in company_source['result']:
+            try: 
+                company_id = company['companyId']
+                company_name = company['companyShortName']
+                company_city = company['city']
+                company_logo = company['companyLogo']
+                company_stage = company['financeStage']
+                company_pos = company['positionNum']
+                company_industry = company['industryField']
+                company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
+                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
+                soup = BeautifulSoup(company_home.content, "lxml")
+                company_people = soup.select('.number')[0].parent.get_text().strip()
+                company_intro = soup.select('.company_content')[0].get_text()
+                company_location = soup.select('.mlist_li_desc')[0].get_text()
+                tags = soup.select('.con_ul_li')
+                company_tags = []
+                for tag in tags:
+                    company_tags.append(tag.get_text().strip())
+                position_payload['companyId'] = company_id
+                salary = 0
+                for page in range(int(math.ceil(float(company_pos) / 10))):
+                    position_payload['pageNo'] = str(page)
+                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                    #time.sleep(0.1)
+                    for position in positions:
+                        if position['jobNature'] != '全职':
+                            continue
+                        salary += aver_salary(position['salary'])
+                company_salary = 0 if company_pos == 0 else salary / company_pos
+                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
+                print len(company_res)
+            except Exception, e:
+                print 'except get company data'
+                print e
+        if i % 100 == 0 or i == company_pages:
+            try:  
+                cursor.executemany(company_sql, company_res) 
+                print 'sql'
+                db.commit() 
+                company_res = []
+            except Exception, e:
+                db.rollback()
+                print 'except: sql'
+                print e 
     
     
     #soup = BeautifulSoup(source.content)
@@ -447,6 +370,3 @@ def data_job():
     job_count(job_dic.keys(), path, data_job_sql)
 
 #data_job()
-
-
-
