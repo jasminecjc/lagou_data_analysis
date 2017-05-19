@@ -146,7 +146,7 @@ def companys():
     # res = partial(valid_proxy, path, 'post', 0)(payload)
     # source = res[0].json()
     # proxies = res[1]
-    source = partial(valid_proxy, path, 'post', 0)(payload)
+    source = partial(valid_proxy, path, 'post', 0)(payload).json()
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
