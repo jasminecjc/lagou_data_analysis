@@ -67,8 +67,7 @@ def valid_proxy(path, method, code = 0, *payload):
                 notfound = len(source.json()['result'])
             except:
                 notfound = 0 if BeautifulSoup(source.content,"lxml").select('div.i_error') else 1
-            code = notfound and source.status_code
-            print source
+            code = source.status_code
         except Exception, e:
             print 'except: 1'
             print e
@@ -157,53 +156,57 @@ def companys():
     company_res = []
     for i in range(1, company_pages):
         payload['pn'] = str(i)
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
-        for company in company_source['result']:
-            try: 
-                company_id = company['companyId']
-                company_name = company['companyShortName']
-                company_city = company['city']
-                company_logo = company['companyLogo']
-                company_stage = company['financeStage']
-                company_pos = company['positionNum']
-                company_industry = company['industryField']
-                company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-                #time.sleep(0.1)
-                soup = BeautifulSoup(company_home.content, "lxml")
-                company_people = soup.select('.number')[0].parent.get_text().strip()
-                company_intro = soup.select('.company_content')[0].get_text()
-                company_location = soup.select('.mlist_li_desc')[0].get_text()
-                tags = soup.select('.con_ul_li')
-                company_tags = []
-                for tag in tags:
-                    company_tags.append(tag.get_text().strip())
-                position_payload['companyId'] = company_id
-                salary = 0
-                for page in range(int(math.ceil(float(company_pos) / 10))):
-                    position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+        try:
+            company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
+            for company in company_source['result']:
+                try: 
+                    company_id = company['companyId']
+                    company_name = company['companyShortName']
+                    company_city = company['city']
+                    company_logo = company['companyLogo']
+                    company_stage = company['financeStage']
+                    company_pos = company['positionNum']
+                    company_industry = company['industryField']
+                    company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
+                    company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
                     #time.sleep(0.1)
-                    for position in positions:
-                        if position['jobNature'] != '全职':
-                            continue
-                        salary += aver_salary(position['salary'])
-                company_salary = 0 if company_pos == 0 else salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
-            except Exception, e:
-                print 'except get company data'
-                print e
-            print len(company_res)
-        if i % 50 == 0 or i == company_pages:
-            try:  
-                cursor.executemany(company_sql, company_res) 
-                print 'sql'
-                db.commit() 
-                company_res = []
-            except Exception, e:
-                db.rollback()
-                print 'except: sql'
-                print e 
+                    soup = BeautifulSoup(company_home.content, "lxml")
+                    company_people = soup.select('.number')[0].parent.get_text().strip()
+                    company_intro = soup.select('.company_content')[0].get_text()
+                    company_location = soup.select('.mlist_li_desc')[0].get_text()
+                    tags = soup.select('.con_ul_li')
+                    company_tags = []
+                    for tag in tags:
+                        company_tags.append(tag.get_text().strip())
+                    position_payload['companyId'] = company_id
+                    salary = 0
+                    for page in range(int(math.ceil(float(company_pos) / 10))):
+                        position_payload['pageNo'] = str(page)
+                        positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
+                        #time.sleep(0.1)
+                        for position in positions:
+                            if position['jobNature'] != '全职':
+                                continue
+                            salary += aver_salary(position['salary'])
+                    company_salary = 0 if company_pos == 0 else salary / company_pos
+                    company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
+                except Exception, e:
+                    print 'except get company data'
+                    print e
+                print len(company_res)
+            if i % 50 == 0 or i == company_pages:
+                try:  
+                    cursor.executemany(company_sql, company_res) 
+                    print 'sql'
+                    db.commit() 
+                    company_res = []
+                except Exception, e:
+                    db.rollback()
+                    print 'except: sql'
+                    print e 
+        except Exception, e:
+            print 'except company_source err'
+            print e
     # try:
     #     thread = []
     #     threadNum = 4 if company_pages % 4 == 0 else 5
