@@ -129,8 +129,8 @@ def companys():
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
-                     city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary)
-                     values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s)'''
+                     city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary, location)
+                     values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s, %s)'''
     # try:
     #     thread = []
     #     threadNum = 4 if company_pages % 4 == 0 else 5
@@ -176,6 +176,7 @@ def companys():
                 soup = BeautifulSoup(company_home.content, "lxml")
                 company_people = soup.select('.number')[0].parent.get_text().strip()
                 company_intro = soup.select('.company_content')[0].get_text()
+                company_location = soup.select('.mlist_li_desc')[0].get_text()
                 tags = soup.select('.con_ul_li')
                 company_tags = []
                 for tag in tags:
@@ -191,7 +192,7 @@ def companys():
                             continue
                         salary += aver_salary(position['salary'])
                 company_salary = 0 if company_pos == 0 else salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
+                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
                 print len(company_res)
             except Exception, e:
                 print 'except get company data'
