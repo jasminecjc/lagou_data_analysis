@@ -67,7 +67,7 @@ def valid_proxy(path, method, code = 0, *payload):
                 notfound = len(source.json()['result'])
             except:
                 notfound = 0 if BeautifulSoup(source.content,"lxml").select('div.i_error') else 1
-            code = source.status_code
+            code = notfound and source.status_code
         except Exception, e:
             print 'except: 1'
             print e
