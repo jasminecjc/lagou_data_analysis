@@ -125,7 +125,7 @@ def companys():
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
     res = partial(valid_proxy, path, 'post', 0)(payload)
     source = res[0].json()
-    proxies = res[1]
+    #proxies = res[1]
     company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
@@ -148,15 +148,13 @@ def companys():
     #     print e  
     company_res = []
     for i in range(1, company_pages + 1):
-        payload['pn'] = str(i)  
-        if i % 55 == 0:
-            proxies = {"https": "https://{}".format(get_proxy())}
+        payload['pn'] = str(i) 
+        proxies = {"https": "https://{}".format(get_proxy())}
         code = 0
         while code != 200:
             try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
-                
-                code = 200
+                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()              
+                code = 200 if len(company_source['result']) else 0
             except Exception, e:
                 print 'except: 2'
                 print e

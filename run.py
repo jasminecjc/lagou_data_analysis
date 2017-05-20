@@ -12,15 +12,15 @@ import pprint
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-def connectdb():
-	db = MySQLdb.connect(host=HOST, user=USER, passwd=PASSWORD, db=DATABASE, port=PORT, charset=CHARSET)
-	db.autocommit(True)
-	cursor = db.cursor()
-	return (db,cursor)
+# def connectdb():
+# 	db = MySQLdb.connect(host=HOST, user=USER, passwd=PASSWORD, db=DATABASE, port=PORT, charset=CHARSET)
+# 	db.autocommit(True)
+# 	cursor = db.cursor()
+# 	return (db,cursor)
 
-def closedb(db,cursor):
-	db.close()
-	cursor.close()
+# def closedb(db,cursor):
+# 	db.close()
+# 	cursor.close()
 
 @app.route('/')
 def index():
