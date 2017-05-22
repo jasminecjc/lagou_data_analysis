@@ -153,7 +153,7 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                time.sleep(0.5)
+                time.sleep(1)
                 a = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
                 print a 
                 print a.json()
