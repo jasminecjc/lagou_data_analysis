@@ -155,6 +155,7 @@ def companys():
             try:  
                 a = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
                 print a 
+                print a.json()
                 company_source = a.json()           
                 code = 200 if len(company_source['result']) else 0
             except Exception, e:
