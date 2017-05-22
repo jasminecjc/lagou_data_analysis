@@ -123,10 +123,10 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    res = partial(valid_proxy, path, 'post', 0)(payload)
-    source = res[0].json()
-    #proxies = res[1]
-    company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
+    # res = partial(valid_proxy, path, 'post', 0)(payload)
+    # source = res[0].json()
+    # #proxies = res[1]
+    # company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     #proxies = {"https": "https://{}".format(get_proxy())}
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary, location)
@@ -147,7 +147,7 @@ def companys():
     #     print 'except: 7'
     #     print e  
     company_res = []
-    for i in range(1, company_pages + 1):
+    for i in range(1, 5000):
         payload['pn'] = str(i) 
         proxies = {"https": "https://{}".format(get_proxy())}
         code = 0
@@ -197,7 +197,7 @@ def companys():
             except Exception, e:
                 print 'except get company data'
                 print e
-        if i % 100 == 0 or i == company_pages:
+        if i % 100 == 0 or i == 5000:
             try:  
                 cursor.executemany(company_sql, company_res) 
                 print 'sql'
