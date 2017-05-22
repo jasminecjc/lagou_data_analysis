@@ -31,7 +31,7 @@ headers = {
 }
 
 proxyHost = "proxy.abuyun.com"
-proxyPort = "9010"
+proxyPort = "9020"
 
 # 代理隧道验证信息
 proxyUser = "H176KJ2PF2FK163D"
