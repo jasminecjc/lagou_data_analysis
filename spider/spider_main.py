@@ -34,8 +34,8 @@ proxyHost = "proxy.abuyun.com"
 proxyPort = "9010"
 
 # 代理隧道验证信息
-proxyUser = "H01234567890123P"
-proxyPass = "0123456789012345"
+proxyUser = "H77D3H3989FF44PP"
+proxyPass = "4528FDF31F1B06BB"
 
 proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
   "host" : proxyHost,
