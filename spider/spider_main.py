@@ -173,7 +173,8 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()           
+                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()  
+                print company_source      
                 code = 200 if len(company_source['result']) else 0
             except Exception, e:
                 print 'except: 2'
@@ -202,16 +203,14 @@ def companys():
                     company_tags.append(tag.get_text().strip())
                 position_payload['companyId'] = company_id
                 salary = 0
-                print "test1"
                 for page in range(int(math.ceil(float(company_pos) / 10))):
                     position_payload['pageNo'] = str(page)
                     positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                    #time.sleep(0.1)
+                    time.sleep(1)
                     for position in positions:
                         if position['jobNature'] != '全职':
                             continue
                         salary += aver_salary(position['salary'])
-                print "test2"
                 company_salary = 0 if company_pos == 0 else salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
                 print len(company_res)
