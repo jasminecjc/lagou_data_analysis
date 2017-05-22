@@ -153,6 +153,7 @@ def companys():
         code = 0
         while code != 200:
             try:  
+                time.sleep(0.5)
                 a = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
                 print a 
                 print a.json()
@@ -162,7 +163,7 @@ def companys():
                 print 'except: 2'
                 print e
                 proxies = {"https": "https://{}".format(get_proxy())}
-                time.sleep(0.5)
+
         print i         
         for company in company_source['result']:
             try: 
