@@ -173,6 +173,7 @@ def companys():
         code = 0
         while code != 200:
             try:  
+                time.sleep(1)
                 company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()  
                 print company_source      
                 code = 200 if len(company_source['result']) else 0
