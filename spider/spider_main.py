@@ -25,7 +25,7 @@ cursor = db.cursor()
 session = requests.session()
     
 headers = {
-    'Proxy-Authorization': 'Basic SDc3RDNIMzk4OUZGNDRQUDo0NTI4RkRGMzFGMUIwNkJC',
+    'Proxy-Authorization': 'Basic SDE3NktKMlBGMkZLMTYzRDo0M0NGOERENkE3OTkwNDJE',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
     'Cookie': 'LGUID=20160223140504-620c0982-d9f3-11e5-8b4c-525400f775ce; tencentSig=6558885888; user_trace_token=20170228174718-e5fb608afce74f799b7776b1047078c6; fromsite=www.google.co.jp; index_location_city=%E5%85%A8%E5%9B%BD; SEARCH_ID=903d052305ac48cd89da8777f732ed0d; JSESSIONID=937760D5DB1DE2F81DA0B920D449CE9F; PRE_UTM=; PRE_HOST=www.baidu.com; PRE_SITE=https%3A%2F%2Fwww.baidu.com%2Flink%3Furl%3DgqHLbZOanuNKiqmYhHa76U6q7FKEDxhDErLFpCoECiO%26wd%3D%26eqid%3D8df355dc0004eb9b0000000258e7a7eb; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; TG-TRACK-CODE=index_company; _ga=GA1.2.507913091.1456207502; LGSID=20170407225346-009efbed-1ba2-11e7-9d24-5254005c3644; LGRID=20170407225432-1bd38d70-1ba2-11e7-9d24-5254005c3644; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491466928,1491556280,1491576814,1491576825; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1491576870'
 }
@@ -34,8 +34,8 @@ proxyHost = "proxy.abuyun.com"
 proxyPort = "9010"
 
 # 代理隧道验证信息
-proxyUser = "H77D3H3989FF44PP"
-proxyPass = "4528FDF31F1B06BB"
+proxyUser = "H176KJ2PF2FK163D"
+proxyPass = "43CF8DD6A799042D"
 
 proxyMeta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
   "host" : proxyHost,
