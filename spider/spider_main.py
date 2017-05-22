@@ -162,6 +162,7 @@ def companys():
                 print 'except: 2'
                 print e
                 proxies = {"https": "https://{}".format(get_proxy())}
+                time.sleep(0.5)
         print i         
         for company in company_source['result']:
             try: 
