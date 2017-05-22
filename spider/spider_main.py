@@ -153,7 +153,9 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()              
+                a = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6)
+                print a 
+                company_source = a.json()           
                 code = 200 if len(company_source['result']) else 0
             except Exception, e:
                 print 'except: 2'
@@ -348,7 +350,7 @@ def job_count(job_list, path, job_sql):
                     print e        
 def program_lan():
     path = 'https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false'
-    lan_list = ['Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
+    lan_list = ['Javascript','Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go', 'Scala']
     
     lan_sql = '''insert into lagou_lan(lan,
                  city, aver_salary, years, finance_stage, education, fields)
