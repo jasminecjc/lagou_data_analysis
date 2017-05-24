@@ -143,33 +143,16 @@ def companys():
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
     position_payload = {'positionFirstType': '全部', 'pageSize': '10'}
-    # res = partial(valid_proxy, path, 'post', 0)(payload)
-    # source = res[0].json()
-    # #proxies = res[1]
-    # company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
-    #proxies = {"https": "https://{}".format(get_proxy())}
+    res = partial(valid_proxy, path, 'post', 0)(payload)
+    source = res[0].json()
+    company_pages = int(math.ceil(int(source['totalCount']) / int(source['pageSize'])))
     company_sql = '''insert into lagou_company(name,
                      city, logo_address, industry, finance_stage, position_num, people_num, intro, tags, aver_salary, location)
                      values (%s, %s, %s, %s, %s, %s, %s, %s, "%s", %s, %s)'''
-    # try:
-    #     thread = []
-    #     threadNum = 4 if company_pages % 4 == 0 else 5
-    #     ranges = company_pages / 4
-    #     for i in range(0, company_pages, company_pages / 4):   
-    #         t = threading.Thread(target=company_crawler,
-    #                           args=(i, ranges, path, position_path, payload, position_payload, company_sql))
-    #         thread.append(t)
-    #     for i in range(0, threadNum):
-    #         thread[i].start()
-    #     for i in range(0, threadNum):
-    #         thread[i].join()
-    # except Exception, e:
-    #     print 'except: 7'
-    #     print e  
+
     company_res = []
-    for i in range(1, 5000):
+    for i in range(1, company_pages + 1):
         payload['pn'] = str(i) 
-        #proxies = {"https": "https://{}".format(get_proxy())}
         code = 0
         while code != 200:
             try:  
@@ -180,9 +163,6 @@ def companys():
             except Exception, e:
                 print 'except: 2'
                 print e
-                #proxies = {"https": "https://{}".format(get_proxy())}
-
-        print i         
         for company in company_source['result']:
             try: 
                 company_id = company['companyId']
@@ -214,11 +194,10 @@ def companys():
                         salary += aver_salary(position['salary'])
                 company_salary = 0 if company_pos == 0 else salary / company_pos
                 company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary, company_location))          
-                print len(company_res)
+                #print len(company_res)
             except Exception, e:
                 print 'except get company data'
                 print e
-        if i % 100 == 0 or i == 5000:
             try:  
                 cursor.executemany(company_sql, company_res) 
                 print 'sql'
