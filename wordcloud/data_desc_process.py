@@ -14,6 +14,7 @@ class GetWords(object):
         self.file_list = file_list
         self.dic_list = dic_list
 
+    #获取自定义词典的词列表
     def get_dic(self):  
         dic = open(self.dict_name, 'r')
         while 1:
@@ -26,10 +27,13 @@ class GetWords(object):
     def get_word_to_cloud(self):
         for file in self.file_list:
             with codecs.open('../spider/' + file, "r",encoding='utf-8', errors='ignore') as string:
+                #把文档中所有英文单词转成大写方便统计
                 string = string.read().upper()
+                #分词，关闭新词发现功能
                 res = jieba.cut(string, HMM=False)
                 reslist = list(res)
                 wordDict = {}
+                #统计词频，获取词频字典
                 for i in reslist:
                     if i not in self.dic_list:
                         continue
@@ -37,17 +41,17 @@ class GetWords(object):
                         wordDict[i]=wordDict[i]+1
                     else:
                         wordDict[i] = 1
-
+            #设置词云形状图
             coloring = imread('test.jpeg')
-
-            wc = WordCloud(font_path='msyh.ttf',mask=coloring,
+            #设置词云相关配置如字体背景色等
+            wc = WordCloud(font_path='msyh.ttc',mask=coloring,
                     background_color="white", max_words=50,
                     max_font_size=40, random_state=42)
 
             wc.generate_from_frequencies(wordDict)
-
+            #导出图片
             wc.to_file("%s.png"%(file))
-
+#导入自定义词典
 def set_dic():
     _curpath=os.path.normpath( os.path.join( os.getcwd(), os.path.dirname(__file__) ))
     settings_path = os.environ.get('dict.txt')

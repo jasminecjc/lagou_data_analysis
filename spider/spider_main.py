@@ -15,7 +15,7 @@ reload(sys)
 sys.setdefaultencoding('utf-8') 
 
 #连接数据库
-db = MySQLdb.connect(host="59.110.227.27", user="root", passwd="wjbxlcjc", db="graduate_work", charset="utf8")
+db = MySQLdb.connect(host="yourhost", user="root", passwd="yourpwd", db="yourdb", charset="utf8")
 cursor = db.cursor()
 
 session = requests.session()
@@ -58,65 +58,8 @@ def aver_salary(sal):
         c = int(re.split('k|K', sal)[0])
     return c
 
-# lagou
-def company_crawler(i, ranges, path, position_path, payload, position_payload, company_sql):
-    company_res = []
-    for j in range(i - ranges, i + 1):
-        payload['pn'] = str(j)
-        print j
-        if j % 55 == 0:
-            proxies = {"https": "https://{}".format(get_proxy())}
-        code = 0
-        while code != 200:
-            try:  
-                company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()
-                code = 200 if len(company_source['result']) != 0 else 0
-                print i
-            except Exception, e:
-                print 'except: 2'
-                proxies = {"https": "https://{}".format(get_proxy())}
-        company_source = partial(valid_proxy, path, 'post', 0)(payload)[0].json()          
-        for company in company_source['result']:
-            try: 
-                company_id = company['companyId']
-                company_name = company['companyShortName']
-                company_city = company['city']
-                company_logo = company['companyLogo']
-                company_stage = company['financeStage']
-                company_pos = company['positionNum']
-                company_industry = company['industryField']
-                company_path = 'https://www.lagou.com/gongsi/%s.html' % (company_id)
-                company_home = partial(valid_proxy, company_path, 'get', 0)()[0]
-                soup = BeautifulSoup(company_home.content, "lxml")
-                company_people = soup.select('.number')[0].parent.get_text().strip()
-                company_intro = soup.select('.company_content')[0].get_text()
-                tags = soup.select('.con_ul_li')
-                company_tags = []
-                for tag in tags:
-                    company_tags.append(tag.get_text().strip())
-                position_payload['companyId'] = company_id
-                salary = 0
-                for page in range(int(math.ceil(float(company_pos) / 10))):
-                    position_payload['pageNo'] = str(page)
-                    positions = partial(valid_proxy, position_path, 'post', 0)(position_payload)[0].json()['content']['data']['page']['result']
-                    for position in positions:
-                        if position['jobNature'] != '全职':
-                            continue
-                        salary += aver_salary(position['salary'])
-                company_salary = 0 if company_pos == 0 else salary / company_pos
-                company_res.append((company_name, company_city, company_logo, company_industry, company_stage, company_pos, company_people, company_intro, company_tags, company_salary))          
-            except Exception, e:
-                print 'except get company data'
-                print e
-    try:  
-        cursor.executemany(company_sql, company_res) 
-        db.commit() 
-    except Exception, e:
-        db.rollback()
-        print 'except: sql'
-        print e 
 # 公司分析
-def companys():    
+# def companys():    
     path = 'https://www.lagou.com/gongsi/0-0-0.json'
     position_path = 'https://www.lagou.com/gongsi/searchPosition.json'
     payload = {'first': 'false', 'pn': '2', 'sortField': '0', 'havemark': '0'}
@@ -134,7 +77,6 @@ def companys():
         code = 0
         while code != 200:
             try:  
-                time.sleep(1)
                 company_source = session.post(path, headers = headers, proxies = proxies, data = payload, timeout = 6).json()  
                 print company_source      
                 code = 200 if len(company_source['result']) else 0
